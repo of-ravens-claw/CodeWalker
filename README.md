@@ -5,7 +5,7 @@
 
 ## CodeWalker-orbis broken features:
 
-- Textures (Opening #od will cause a crash, and the map view will be all white)
+- Textures (Opening otd files will cause a crash, and the map view will be all white)
 - Slow map view (likely related to the textures)
 - FXC viewing (different format?)
 - AWC playback (at least when the codec is MP3)
