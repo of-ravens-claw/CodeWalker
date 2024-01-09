@@ -36,7 +36,7 @@ namespace CodeWalker.GameFiles
             FilePath = Name;
 
 
-            if (entry.NameLower.EndsWith(".ymt"))
+            if (entry.NameLower.EndsWith(".omt"))
             {
                 MemoryStream ms = new MemoryStream(data);
                 if (RbfFile.IsRBF(ms))

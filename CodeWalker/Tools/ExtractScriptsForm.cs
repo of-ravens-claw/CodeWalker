@@ -115,12 +115,12 @@ namespace CodeWalker.Tools
 
 
                     byte[] exedat = File.ReadAllBytes(dmppath);
-                    GTA5Keys.Generate(exedat, UpdateDumpStatus);
+                    GTA5Keys.SetKeys();
 
 
                     UpdateDumpStatus("Saving found keys...");
 
-                    GTA5Keys.SaveToPath();
+                    //GTA5Keys.SaveToPath();
 
                     UpdateDumpStatus("Keys loaded.");
                     UpdateExtractStatus("Keys loaded, ready to extract.");

@@ -143,7 +143,7 @@ namespace CodeWalker.Tools
                         }
                         try
                         {
-                            if (bytd && entry.NameLower.EndsWith(".ytd"))
+                            if (bytd && entry.NameLower.EndsWith(".otd"))
                             {
                                 UpdateExtractStatus(entry.Path);
                                 YtdFile ytd = rpfman.GetFile<YtdFile>(entry);
@@ -156,7 +156,7 @@ namespace CodeWalker.Tools
                                     SaveTexture(tex, entry, outputpath);
                                 }
                             }
-                            else if (bydr && entry.NameLower.EndsWith(".ydr"))
+                            else if (bydr && entry.NameLower.EndsWith(".odr"))
                             {
                                 UpdateExtractStatus(entry.Path);
                                 YdrFile ydr = rpfman.GetFile<YdrFile>(entry);
@@ -174,7 +174,7 @@ namespace CodeWalker.Tools
                                     }
                                 }
                             }
-                            else if (bydd && entry.NameLower.EndsWith(".ydd"))
+                            else if (bydd && entry.NameLower.EndsWith(".odd"))
                             {
                                 UpdateExtractStatus(entry.Path);
                                 YddFile ydd = rpfman.GetFile<YddFile>(entry);
@@ -198,7 +198,7 @@ namespace CodeWalker.Tools
                                     }
                                 }
                             }
-                            else if (byft && entry.NameLower.EndsWith(".yft"))
+                            else if (byft && entry.NameLower.EndsWith(".oft"))
                             {
                                 UpdateExtractStatus(entry.Path);
                                 YftFile yft = rpfman.GetFile<YftFile>(entry);

@@ -22,8 +22,6 @@ namespace CodeWalker.RPFExplorer
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ExploreForm());
-
-            GTAFolder.UpdateSettings();
         }
     }
 }

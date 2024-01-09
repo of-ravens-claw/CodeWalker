@@ -10,146 +10,132 @@ using System.Windows.Forms;
 
 namespace CodeWalker.Forms
 {
-    public partial class HexForm : Form
-    {
+	public partial class HexForm : Form
+	{
+		private byte[] _data;
+		private string _fileName;
 
-        private byte[] data;
-        public byte[] Data
-        {
-            get { return data; }
-            set
-            {
-                data = value;
-                UpdateTextBoxFromData();
-            }
-        }
+		public byte[] Data
+		{
+			get => _data;
+			set
+			{
+				_data = value;
+				UpdateTextBoxFromData();
+			}
+		}
 
-        private string fileName;
-        public string FileName
-        {
-            get { return fileName; }
-            set
-            {
-                fileName = value;
-                UpdateFormTitle();
-            }
-        }
-        public string FilePath { get; set; }
+		public string FileName
+		{
+			get => _fileName;
+			set
+			{
+				_fileName = value;
+				UpdateFormTitle();
+			}
+		}
 
+		public string FilePath { get; set; }
+		public bool IgnorePerformanceChecks { get; set; }
 
-        public HexForm()
-        {
-            InitializeComponent();
+		public HexForm()
+		{
+			InitializeComponent();
 
-            LineSizeDropDown.Text = "16";
-        }
+			LineSizeDropDown.Text = @"16";
+			IgnorePerformanceChecks = false;
+		}
 
+		public void LoadData(string filename, string filepath, byte[] data)
+		{
+			FileName = filename;
+			FilePath = filepath;
+			Data = data;
+		}
 
-        public void LoadData(string filename, string filepath, byte[] data)
-        {
-            FileName = filename;
-            FilePath = filepath;
-            Data = data;
-        }
+		private void UpdateFormTitle()
+		{
+			Text = _fileName + @" - Hex Viewer - CodeWalker by dexyfex";
+		}
 
-        private void UpdateFormTitle()
-        {
-            Text = fileName + " - Hex Viewer - CodeWalker by dexyfex";
-        }
+		private void UpdateTextBoxFromData()
+		{
+			if (_data == null)
+			{
+				HexTextBox.Text = "";
+				return;
+			}
 
-        private void UpdateTextBoxFromData()
-        {
-            if (data == null)
-            {
-                HexTextBox.Text = "";
-                return;
-            }
-            if (data.Length > (1048576 * 5))
-            {
-                HexTextBox.Text = "[File size > 5MB - Not shown due to performance limitations - Please use an external viewer for this file.]";
-                return;
-            }
+			if (_data.Length > 5 * 1048576 && !IgnorePerformanceChecks)
+			{
+				HexTextBox.Text =
+					@"[File size > 5MB - Not shown due to performance limitations - Please use an external viewer for this file.]";
+				return;
+			}
 
+			Cursor = Cursors.WaitCursor;
+			bool isHex = LineSizeDropDown.Text != @"Text";
 
-            Cursor = Cursors.WaitCursor;
+			if (!isHex)
+			{
+				string text = Encoding.UTF8.GetString(_data);
+				HexTextBox.Text = text;
+			}
+			else
+			{
+				int charactersPerLine = int.Parse(LineSizeDropDown.Text);
+				int lines = _data.Length / charactersPerLine + (_data.Length % charactersPerLine > 0 ? 1 : 0);
+				StringBuilder hexB = new StringBuilder();
+				StringBuilder texB = new StringBuilder();
+				StringBuilder finB = new StringBuilder();
 
-            //int selline = -1;
-            //int selstartc = -1;
-            //int selendc = -1;
+				for (int i = 0; i < lines; i++)
+				{
+					int pos = i * charactersPerLine;
+					int poslim = pos + charactersPerLine;
+					hexB.Clear();
+					texB.Clear();
+					hexB.AppendFormat("{0:X4}: ", pos);
+					for (int c = pos; c < poslim; c++)
+					{
+						if (c < _data.Length)
+						{
+							byte b = _data[c];
+							hexB.AppendFormat("{0:X2} ", b);
+							if (char.IsControl((char)b))
+							{
+								texB.Append(".");
+							}
+							else
+							{
+								texB.Append(Encoding.ASCII.GetString(_data, c, 1));
+							}
+						}
+						else
+						{
+							hexB.Append("   ");
+							texB.Append(" ");
+						}
+					}
 
-            bool ishex = (LineSizeDropDown.Text != "Text");
+					finB.AppendLine(hexB + "| " + texB);
+				}
 
+				HexTextBox.Text = finB.ToString();
+			}
 
-            if (ishex)
-            {
-                int charsperln = int.Parse(LineSizeDropDown.Text);
-                int lines = (data.Length / charsperln) + (((data.Length % charsperln) > 0) ? 1 : 0);
-                StringBuilder hexb = new StringBuilder();
-                StringBuilder texb = new StringBuilder();
-                StringBuilder finb = new StringBuilder();
+			Cursor = Cursors.Default;
+		}
 
-                //if (offset > 0)
-                //{
-                //    selline = offset / charsperln;
-                //}
-                for (int i = 0; i < lines; i++)
-                {
-                    int pos = i * charsperln;
-                    int poslim = pos + charsperln;
-                    hexb.Clear();
-                    texb.Clear();
-                    hexb.AppendFormat("{0:X4}: ", pos);
-                    for (int c = pos; c < poslim; c++)
-                    {
-                        if (c < data.Length)
-                        {
-                            byte b = data[c];
-                            hexb.AppendFormat("{0:X2} ", b);
-                            if (char.IsControl((char)b))
-                            {
-                                texb.Append(".");
-                            }
-                            else
-                            {
-                                texb.Append(Encoding.ASCII.GetString(data, c, 1));
-                            }
-                        }
-                        else
-                        {
-                            hexb.Append("   ");
-                            texb.Append(" ");
-                        }
-                    }
+		private void LineSizeDropDown_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			UpdateTextBoxFromData();
+		}
 
-                    //if (i == selline) selstartc = finb.Length;
-                    finb.AppendLine(hexb.ToString() + "| " + texb.ToString());
-                    //if (i == selline) selendc = finb.Length - 1;
-                }
-
-                HexTextBox.Text = finb.ToString();
-
-            }
-            else
-            {
-
-                string text = Encoding.UTF8.GetString(data);
-
-
-                HexTextBox.Text = text;
-
-                //if (offset > 0)
-                //{
-                //    selstartc = offset;
-                //    selendc = offset + length;
-                //}
-            }
-
-            Cursor = Cursors.Default;
-        }
-
-        private void LineSizeDropDown_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateTextBoxFromData();
-        }
-    }
+		private void ignoreChecks_CheckedChanged(object sender, EventArgs e)
+		{
+			IgnorePerformanceChecks = ignoreChecks.Checked;
+			UpdateTextBoxFromData();
+		}
+	}
 }

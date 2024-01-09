@@ -390,7 +390,7 @@ namespace CodeWalker.Core.GameFiles.FileTypes.Builders
                     ynv.Polys = new List<YnvPoly>();
                     ynv.HasChanged = true;//mark it for the project window
                     ynv.RpfFileEntry = new RpfResourceFileEntry();
-                    ynv.RpfFileEntry.Name = ynv.Name + ".ynv";
+                    ynv.RpfFileEntry.Name = ynv.Name + ".onv";
                     ynv.RpfFileEntry.Path = string.Empty;
                     cell.Ynv = ynv;
                     YnvFiles.Add(ynv);
@@ -436,7 +436,7 @@ namespace CodeWalker.Core.GameFiles.FileTypes.Builders
             ynv.Polys = new List<YnvPoly>();
             ynv.HasChanged = true;//mark it for the project window
             ynv.RpfFileEntry = new RpfResourceFileEntry();
-            ynv.RpfFileEntry.Name = ynv.Name + ".ynv";
+            ynv.RpfFileEntry.Name = ynv.Name + ".onv";
             ynv.RpfFileEntry.Path = string.Empty;
             YnvFiles.Add(ynv);
 

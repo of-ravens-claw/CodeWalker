@@ -148,7 +148,7 @@ namespace CodeWalker.Project.Panels
                 if (Ynv.AreaID != areaid)
                 {
                     Ynv.AreaID = areaid;
-                    //Ynv.Name = "nodes" + areaid.ToString() + ".ynd";
+                    //Ynv.Name = "nodes" + areaid.ToString() + ".ond";
                     YnvAreaIDInfoLabel.Text = "ID: " + areaid.ToString();
                     ProjectForm.SetYnvHasChanged(true);
                 }

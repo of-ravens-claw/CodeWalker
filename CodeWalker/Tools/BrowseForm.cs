@@ -368,31 +368,31 @@ namespace CodeWalker.Tools
             bool istexdict = false;
 
 
-            if (rfe.NameLower.EndsWith(".ymap"))
+            if (rfe.NameLower.EndsWith(".omap"))
             {
                 YmapFile ymap = new YmapFile(rfe);
                 ymap.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ymap;
             }
-            else if (rfe.NameLower.EndsWith(".ytyp"))
+            else if (rfe.NameLower.EndsWith(".otyp"))
             {
                 YtypFile ytyp = new YtypFile();
                 ytyp.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ytyp;
             }
-            else if (rfe.NameLower.EndsWith(".ymf"))
+            else if (rfe.NameLower.EndsWith(".omf"))
             {
                 YmfFile ymf = new YmfFile();
                 ymf.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ymf;
             }
-            else if (rfe.NameLower.EndsWith(".ymt"))
+            else if (rfe.NameLower.EndsWith(".omt"))
             {
                 YmtFile ymt = new YmtFile();
                 ymt.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ymt;
             }
-            else if (rfe.NameLower.EndsWith(".ybn"))
+            else if (rfe.NameLower.EndsWith(".obn"))
             {
                 YbnFile ybn = new YbnFile();
                 ybn.Load(data, rfe);
@@ -404,7 +404,7 @@ namespace CodeWalker.Tools
                 fxc.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = fxc;
             }
-            else if (rfe.NameLower.EndsWith(".yft"))
+            else if (rfe.NameLower.EndsWith(".oft"))
             {
                 YftFile yft = new YftFile();
                 yft.Load(data, rfe);
@@ -416,7 +416,7 @@ namespace CodeWalker.Tools
                     istexdict = true;
                 }
             }
-            else if (rfe.NameLower.EndsWith(".ydr"))
+            else if (rfe.NameLower.EndsWith(".odr"))
             {
                 YdrFile ydr = new YdrFile();
                 ydr.Load(data, rfe);
@@ -428,14 +428,14 @@ namespace CodeWalker.Tools
                     istexdict = true;
                 }
             }
-            else if (rfe.NameLower.EndsWith(".ydd"))
+            else if (rfe.NameLower.EndsWith(".odd"))
             {
                 YddFile ydd = new YddFile();
                 ydd.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ydd;
                 //todo: show embedded texdicts in ydd's? is this possible?
             }
-            else if (rfe.NameLower.EndsWith(".ytd"))
+            else if (rfe.NameLower.EndsWith(".otd"))
             {
                 YtdFile ytd = new YtdFile();
                 ytd.Load(data, rfe);
@@ -443,25 +443,25 @@ namespace CodeWalker.Tools
                 ShowTextures(ytd.TextureDict);
                 istexdict = true;
             }
-            else if (rfe.NameLower.EndsWith(".ycd"))
+            else if (rfe.NameLower.EndsWith(".ocd"))
             {
                 YcdFile ycd = new YcdFile();
                 ycd.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ycd;
             }
-            else if (rfe.NameLower.EndsWith(".ynd"))
+            else if (rfe.NameLower.EndsWith(".ond"))
             {
                 YndFile ynd = new YndFile();
                 ynd.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ynd;
             }
-            else if (rfe.NameLower.EndsWith(".ynv"))
+            else if (rfe.NameLower.EndsWith(".onv"))
             {
                 YnvFile ynv = new YnvFile();
                 ynv.Load(data, rfe);
                 DetailsPropertyGrid.SelectedObject = ynv;
             }
-            else if (rfe.NameLower.EndsWith("_cache_y.dat"))
+            else if (rfe.NameLower.EndsWith("_cache_o.dat"))
             {
                 CacheDatFile cdf = new CacheDatFile();
                 cdf.Load(data, rfe);

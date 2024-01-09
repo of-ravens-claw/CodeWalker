@@ -621,7 +621,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(24, 13);
             this.label8.TabIndex = 72;
-            this.label8.Text = ".ydr";
+            this.label8.Text = ".odr";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // brushModeGroupBox

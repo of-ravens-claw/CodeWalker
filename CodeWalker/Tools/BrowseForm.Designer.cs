@@ -286,7 +286,7 @@
             this.SearchIgnoreTextBox.Name = "SearchIgnoreTextBox";
             this.SearchIgnoreTextBox.Size = new System.Drawing.Size(202, 20);
             this.SearchIgnoreTextBox.TabIndex = 16;
-            this.SearchIgnoreTextBox.Text = ".ydr, .ydd, .ytd, .yft, .ybn, .ycd, .awc, .bik";
+            this.SearchIgnoreTextBox.Text = ".odr, .odd, .otd, .oft, .obn, .ocd, .awc, .bik";
             // 
             // SearchIgnoreCheckBox
             // 
