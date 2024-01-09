@@ -54,7 +54,7 @@ namespace CodeWalker.Project.Panels
         private void UpdateFormTitle()
         {
             string fn = Ymap.RpfFileEntry?.Name ?? Ymap.Name;
-            if (string.IsNullOrEmpty(fn)) fn = "untitled.ymap";
+            if (string.IsNullOrEmpty(fn)) fn = "untitled.omap";
             Text = fn + (Ymap.HasChanged ? "*" : "");
         }
 

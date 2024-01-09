@@ -42,6 +42,9 @@ namespace CodeWalker.GameFiles
 
         static public void Decrypt_RSXXTEA(byte[] data, uint[] key)
         {
+            const uint DELTA = 0x9e3779b9;
+            const uint TEA_STIRRER = 0xa9d27bd3; // Also modify this in GTAKeys.cs
+
             // Rockstar's modified version of XXTEA
             uint[] blocks = new uint[data.Length / 4];
             Buffer.BlockCopy(data, 0, blocks, 0, data.Length);
@@ -49,15 +52,15 @@ namespace CodeWalker.GameFiles
             int block_count = blocks.Length;
             uint a, b = blocks[0], i;
 
-            i = (uint)(0x9E3779B9 * (6 + 52 / block_count));
+            i = (uint)(DELTA * (6 + 52 / block_count));
             do
             {
                 for (int block_index = block_count - 1; block_index >= 0; --block_index)
                 {
                     a = blocks[(block_index > 0 ? block_index : block_count) - 1];
-                    b = blocks[block_index] -= (a >> 5 ^ b << 2) + (b >> 3 ^ a << 4) ^ (i ^ b) + (key[block_index & 3 ^ (i >> 2 & 3)] ^ a ^ 0x7B3A207F);
+                    b = blocks[block_index] -= (a >> 5 ^ b << 2) + (b >> 3 ^ a << 4) ^ (i ^ b) + (key[block_index & 3 ^ (i >> 2 & 3)] ^ a ^ TEA_STIRRER);
                 }
-                i -= 0x9E3779B9;
+                i -= DELTA;
             } while (i != 0);
 
             Buffer.BlockCopy(blocks, 0, data, 0, data.Length);
@@ -693,13 +696,33 @@ namespace CodeWalker.GameFiles
         }
     }
 
-    public enum AwcCodecType
-    {
-        PCM = 0,
-        ADPCM = 4
-    }
+	// ReSharper disable InconsistentNaming
+	// ReSharper disable IdentifierTypo
+	public enum AwcCodecType // audStreamFormat
+	{
+		// PCM formats are supported on all platforms.
+		// Little Endian: PC, Orbis, Durango
+		// Big Endian: Xenon, Cell
+		kPcm16bitLittleEndian = 0,
+		kPcm16bitBigEndian,
+		kPcm32FLittleEndian,
+		kPcm32FBigEndian,
+		kAdpcm,
 
-    [TC(typeof(EXP))] public class AwcStreamInfo
+		// Non PCM formats
+		kXMA2, // Xenon and Durango only
+		kXWMA, // Unused
+
+		kMP3, // Cell and Orbis only
+		kOgg, // Unused
+		kAAC, // Unused
+		kWMA, // Unused
+		kAtrac9 // Orbis only, disabled in the code.
+	}
+	// ReSharper restore InconsistentNaming
+	// ReSharper restore IdentifierTypo
+
+	  [TC(typeof(EXP))] public class AwcStreamInfo
     {
         public uint RawVal { get; set; }
         public uint ChunkCount { get; set; }
@@ -885,7 +908,7 @@ namespace CodeWalker.GameFiles
                     return "MIDI";
                 }
 
-                var fc = AwcCodecType.PCM;
+                var fc = AwcCodecType.kPcm16bitLittleEndian;
                 var hz = 0;
                 if (FormatChunk != null)
                 {
@@ -900,15 +923,48 @@ namespace CodeWalker.GameFiles
                 string codec = fc.ToString();
                 switch (fc)
                 {
-                    case AwcCodecType.PCM:
-                    case AwcCodecType.ADPCM:
+                    case AwcCodecType.kPcm16bitLittleEndian:
+                        codec = "PCM (16-bit, Little Endian)";
                         break;
-                    default:
+                    case AwcCodecType.kPcm16bitBigEndian:
+                        codec = "PCM (16-bit, Big Endian)";
+                        break;
+                    case AwcCodecType.kPcm32FLittleEndian:
+                        codec = "PCM (32-bit, Little Endian)";
+                        break;
+                    case AwcCodecType.kPcm32FBigEndian:
+                        codec = "PCM (32-bit, Big Endian)";
+                        break;
+                    case AwcCodecType.kAdpcm:
+                        codec = "ADPCM";
+                        break;
+                    case AwcCodecType.kXMA2:
+                        codec = "XMA2";
+                        break;
+                    case AwcCodecType.kXWMA:
+                        codec = "XWMA"; // TODO: What is this?
+                        break;
+                    case AwcCodecType.kMP3:
+                        codec = "MP3";
+                        break;
+                    case AwcCodecType.kOgg:
+                        codec = "OGG";
+                        break;
+                    case AwcCodecType.kAAC:
+                        codec = "AAC";
+                        break;
+                    case AwcCodecType.kWMA:
+                        codec = "WMA";
+                        break;
+                    case AwcCodecType.kAtrac9:
+                        codec = "Atrac9";
+                        break;
+                    default: // Unless Rockstar adds a new Codec, this will likely never hit.
                         codec = "Unknown";
                         break;
                 }
 
-                return codec + ((hz > 0) ? (", " + hz.ToString() + " Hz") : "");
+                return codec + (hz > 0 ? $", {hz} Hz": "");
             }
         }
 
@@ -1415,8 +1471,8 @@ namespace CodeWalker.GameFiles
         {
             var data = GetRawData();
 
-            var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.PCM;
-            if (codec == AwcCodecType.ADPCM)//just convert ADPCM to PCM for compatibility reasons
+            var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.kPcm16bitLittleEndian;
+            if (codec == AwcCodecType.kAdpcm)//just convert ADPCM to PCM for compatibility reasons
             {
                 data = ADPCMCodec.DecodeADPCM(data, SampleCount);
             }
@@ -1533,8 +1589,8 @@ namespace CodeWalker.GameFiles
 
             var sampleCount = datalen * 2; //assume 16bits per sample PCM
 
-            var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.PCM;
-            if (codec == AwcCodecType.ADPCM)// convert PCM wav to ADPCM where required
+            var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.kPcm16bitLittleEndian;
+            if (codec == AwcCodecType.kAdpcm)// convert PCM wav to ADPCM where required
             {
                 dataPCM = ADPCMCodec.EncodeADPCM(dataPCM, sampleCount);
                 bitsPerSample = 4;
@@ -1811,7 +1867,7 @@ namespace CodeWalker.GameFiles
         public uint Samples { get; set; }
         public short Headroom { get; set; }
         public ushort SamplesPerSecond { get; set; }
-        public AwcCodecType Codec { get; set; } = AwcCodecType.ADPCM;
+        public AwcCodecType Codec { get; set; } = AwcCodecType.kAdpcm;
         public byte Unused1 { get; set; }
         public ushort Unused2 { get; set; }
 

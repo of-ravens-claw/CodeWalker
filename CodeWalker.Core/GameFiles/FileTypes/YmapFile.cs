@@ -1335,7 +1335,7 @@ namespace CodeWalker.GameFiles
         public void SetName(string newname)
         {
             var newnamel = newname.ToLowerInvariant();
-            var newnamex = newname + ".ymap";
+            var newnamex = newname + ".omap";
             var newnamexl = newname.ToLowerInvariant();
             var newhash = JenkHash.GenHash(newnamel);
             JenkIndex.Ensure(newnamel);

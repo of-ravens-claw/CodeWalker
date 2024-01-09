@@ -795,12 +795,12 @@ namespace CodeWalker.Project.Panels
                 foreach (var ynv in ynvs)
                 {
                     var bytes = ynv.Save();
-                    var fpath = path + ynv.Name + ".ynv";
+                    var fpath = path + ynv.Name + ".onv";
                     //File.WriteAllBytes(fpath, bytes);
 
                     YnvFile nynv = new YnvFile();
                     nynv.RpfFileEntry = new RpfResourceFileEntry();
-                    nynv.RpfFileEntry.Name = ynv.Name + ".ynv";
+                    nynv.RpfFileEntry.Name = ynv.Name + ".onv";
                     nynv.FilePath = fpath;
                     nynv.Name = ynv.RpfFileEntry.Name;
                     nynv.Load(bytes);

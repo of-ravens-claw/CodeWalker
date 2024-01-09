@@ -22,22 +22,22 @@ namespace CodeWalker.GameFiles
                 outputfolder = Path.Combine(outputfolder, e.GetShortName());
             }
 
-            if (fnl.EndsWith(".ymt"))
+            if (fnl.EndsWith(".omt"))
             {
                 YmtFile ymt = RpfFile.GetFile<YmtFile>(e, data);
                 return GetXml(ymt, out filename);
             }
-            else if (fnl.EndsWith(".ymf"))
+            else if (fnl.EndsWith(".omf"))
             {
                 YmfFile ymf = RpfFile.GetFile<YmfFile>(e, data);
                 return GetXml(ymf, out filename);
             }
-            else if (fnl.EndsWith(".ymap"))
+            else if (fnl.EndsWith(".omap"))
             {
                 YmapFile ymap = RpfFile.GetFile<YmapFile>(e, data);
                 return GetXml(ymap, out filename);
             }
-            else if (fnl.EndsWith(".ytyp"))
+            else if (fnl.EndsWith(".otyp"))
             {
                 YtypFile ytyp = RpfFile.GetFile<YtypFile>(e, data);
                 return GetXml(ytyp, out filename);
@@ -57,77 +57,77 @@ namespace CodeWalker.GameFiles
                 RelFile rel = RpfFile.GetFile<RelFile>(e, data);
                 return GetXml(rel, out filename);
             }
-            else if (fnl.EndsWith(".ynd"))
+            else if (fnl.EndsWith(".ond"))
             {
                 YndFile ynd = RpfFile.GetFile<YndFile>(e, data);
                 return GetXml(ynd, out filename);
             }
-            else if (fnl.EndsWith(".ynv"))
+            else if (fnl.EndsWith(".onv"))
             {
                 YnvFile ynv = RpfFile.GetFile<YnvFile>(e, data);
                 return GetXml(ynv, out filename);
             }
-            else if (fnl.EndsWith(".ycd"))
+            else if (fnl.EndsWith(".ocd"))
             {
                 YcdFile ycd = RpfFile.GetFile<YcdFile>(e, data);
                 return GetXml(ycd, out filename);
             }
-            else if (fnl.EndsWith(".ybn"))
+            else if (fnl.EndsWith(".obn"))
             {
                 YbnFile ybn = RpfFile.GetFile<YbnFile>(e, data);
                 return GetXml(ybn, out filename);
             }
-            else if (fnl.EndsWith(".ytd"))
+            else if (fnl.EndsWith(".otd"))
             {
                 YtdFile ytd = RpfFile.GetFile<YtdFile>(e, data);
                 return GetXml(ytd, out filename, outputfolder);
             }
-            else if (fnl.EndsWith(".ydr"))
+            else if (fnl.EndsWith(".odr"))
             {
                 YdrFile ydr = RpfFile.GetFile<YdrFile>(e, data);
                 return GetXml(ydr, out filename, outputfolder);
             }
-            else if (fnl.EndsWith(".ydd"))
+            else if (fnl.EndsWith(".odd"))
             {
                 YddFile ydd = RpfFile.GetFile<YddFile>(e, data);
                 return GetXml(ydd, out filename, outputfolder);
             }
-            else if (fnl.EndsWith(".yft"))
+            else if (fnl.EndsWith(".oft"))
             {
                 YftFile yft = RpfFile.GetFile<YftFile>(e, data);
                 return GetXml(yft, out filename, outputfolder);
             }
-            else if (fnl.EndsWith(".ypt"))
+            else if (fnl.EndsWith(".opt"))
             {
                 YptFile ypt = RpfFile.GetFile<YptFile>(e, data);
                 return GetXml(ypt, out filename, outputfolder);
             }
-            else if (fnl.EndsWith(".yld"))
+            else if (fnl.EndsWith(".old"))
             {
                 YldFile yld = RpfFile.GetFile<YldFile>(e, data);
                 return GetXml(yld, out filename);
             }
-            else if (fnl.EndsWith(".yed"))
+            else if (fnl.EndsWith(".oed"))
             {
                 YedFile yed = RpfFile.GetFile<YedFile>(e, data);
                 return GetXml(yed, out filename);
             }
-            else if (fnl.EndsWith(".ywr"))
+            else if (fnl.EndsWith(".owr"))
             {
                 YwrFile ywr = RpfFile.GetFile<YwrFile>(e, data);
                 return GetXml(ywr, out filename);
             }
-            else if (fnl.EndsWith(".yvr"))
+            else if (fnl.EndsWith(".ovr"))
             {
                 YvrFile yvr = RpfFile.GetFile<YvrFile>(e, data);
                 return GetXml(yvr, out filename);
             }
-            else if (fnl.EndsWith(".ypdb"))
+            else if (fnl.EndsWith(".opdb"))
             {
                 YpdbFile ypdb = RpfFile.GetFile<YpdbFile>(e, data);
                 return GetXml(ypdb, out filename);
             }
-            else if (fnl.EndsWith(".yfd"))
+            else if (fnl.EndsWith(".ofd"))
             {
                 YfdFile yfd = RpfFile.GetFile<YfdFile>(e, data);
                 return GetXml(yfd, out filename);
@@ -142,7 +142,7 @@ namespace CodeWalker.GameFiles
                 FxcFile fxc = RpfFile.GetFile<FxcFile>(e, data);
                 return GetXml(fxc, out filename, outputfolder);
             }
-            else if (fnl.EndsWith("cache_y.dat"))
+            else if (fnl.EndsWith("cache_o.dat"))
             {
                 CacheDatFile cdf = RpfFile.GetFile<CacheDatFile>(e, data);
                 return GetXml(cdf, out filename, outputfolder);

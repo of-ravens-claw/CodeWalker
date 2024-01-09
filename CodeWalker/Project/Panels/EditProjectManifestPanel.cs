@@ -81,7 +81,7 @@ namespace CodeWalker.Project.Panels
                         ytypname = ytyp.RpfFileEntry?.Name?.ToLowerInvariant();
                         if (ytypname == null) ytypname = "";
                     }
-                    if (ytypname.EndsWith(".ytyp"))
+                    if (ytypname.EndsWith(".otyp"))
                     {
                         ytypname = ytypname.Substring(0, ytypname.Length - 5);
                     }
@@ -102,7 +102,7 @@ namespace CodeWalker.Project.Panels
                         {
                             ymapname = ymap.Name.ToLowerInvariant();
                         }
-                        if (ymapname.EndsWith(".ymap"))
+                        if (ymapname.EndsWith(".omap"))
                         {
                             ymapname = ymapname.Substring(0, ymapname.Length - 5);
                         }

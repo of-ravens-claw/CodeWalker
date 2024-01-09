@@ -81,8 +81,8 @@ namespace CodeWalker
 
             switch (themestr)
             {
-                default:
                 case "Windows":
+                default:
                     //Theme = new VS2005Theme();
                     ViewThemeWindowsMenu.Checked = true;
                     version = VisualStudioToolStripExtender.VsVersion.Unknown;
@@ -90,6 +90,7 @@ namespace CodeWalker
                     {
                         MessageBox.Show("Please reopen RPF Explorer to change back to Windows theme.");
                     }
+
                     break;
                 case "Blue":
                     Theme = new VS2015BlueTheme();
@@ -135,7 +136,9 @@ namespace CodeWalker
             var s = Settings.Default;
 
             OptionsStartInEditModeMenu.Checked = s.RPFExplorerStartInEditMode;
-            OptionsStartInFolderValueMenu.Text = string.IsNullOrEmpty(s.RPFExplorerStartFolder) ? "(Default)" : s.RPFExplorerStartFolder;
+            OptionsStartInFolderValueMenu.Text = string.IsNullOrEmpty(s.RPFExplorerStartFolder)
+                ? "(Default)"
+                : s.RPFExplorerStartFolder;
 
             var folders = s.RPFExplorerExtraFolders?.Split('\n');
             if (folders != null)
@@ -155,6 +158,7 @@ namespace CodeWalker
                 }
             }
         }
+
         private void SaveSettings()
         {
             var extrafolders = new StringBuilder();
@@ -163,6 +167,7 @@ namespace CodeWalker
                 if (extrafolders.Length > 0) extrafolders.Append("\n");
                 extrafolders.Append(folder.FullPath);
             }
+
             Settings.Default.RPFExplorerExtraFolders = extrafolders.ToString();
 
             Settings.Default.Save();
@@ -177,7 +182,7 @@ namespace CodeWalker
             // This is probably not necessary now that the GTA folder is checked 
             // in the Program.cs when the game is initiated, but we will leave it 
             // here for now to make sure 
-            if(!GTAFolder.UpdateGTAFolder(true))
+            if (!GTAFolder.UpdateGTAFolder(true))
             {
                 Close();
                 return;
@@ -186,6 +191,8 @@ namespace CodeWalker
 
             Task.Run(() =>
             {
+                GTA5Keys.SetKeys();
+                /*
                 try
                 {
                     GTA5Keys.LoadFromPath(GTAFolder.CurrentGTAFolder, Settings.Default.Key);
@@ -195,6 +202,7 @@ namespace CodeWalker
                     UpdateStatus("Unable to load gta5.exe!");
                     return;
                 }
+                */
 
                 RefreshMainTreeView();
 
@@ -246,83 +254,180 @@ namespace CodeWalker
                 }
             });
         }
+
         public GameFileCache GetFileCache()
         {
             lock (FileCacheSyncRoot)
             {
                 if (FileCache.IsInited) return FileCache;
             }
+
             InitFileCache(); //if we got here, it's not inited yet - init it!
             return FileCache; //return it even though it's probably not inited yet..
         }
 
+        // TODO: Sort these properly	
         private void InitFileTypes()
         {
             FileTypes = new Dictionary<string, FileTypeInfo>();
-            InitFileType(".rpf", "Rage Package File", 3);
+
+            #region Generic formats
+
             InitFileType("", "File", 4);
+            InitFileType(".bin", "Binary File", 4);
             InitFileType(".dat", "Data File", 4);
             InitFileType(".cab", "CAB File", 4);
             InitFileType(".txt", "Text File", 5, FileTypeAction.ViewText);
-            InitFileType(".gxt2", "Global Text Table", 5, FileTypeAction.ViewGxt);
+
             InitFileType(".log", "LOG File", 5, FileTypeAction.ViewText);
-            InitFileType(".ini", "Config Text", 5, FileTypeAction.ViewText);
+            InitFileType(".ini", "Configuration File", 5, FileTypeAction.ViewText);
             InitFileType(".vdf", "Steam Script File", 5, FileTypeAction.ViewText);
-            InitFileType(".sps", "Shader Preset", 5, FileTypeAction.ViewText);
-            InitFileType(".ugc", "User-Generated Content", 5, FileTypeAction.ViewText);
+
             InitFileType(".xml", "XML File", 6, FileTypeAction.ViewXml);
-            InitFileType(".meta", "Metadata (XML)", 6, FileTypeAction.ViewXml);
-            InitFileType(".ymt", "Metadata (Binary)", 6, FileTypeAction.ViewYmt, true);
-            InitFileType(".pso", "Metadata (PSO)", 6, FileTypeAction.ViewJPso, true);
-            InitFileType(".gfx", "Scaleform Flash", 7);
-            InitFileType(".ynd", "Path Nodes", 8, FileTypeAction.ViewYnd, true);
-            InitFileType(".ynv", "Nav Mesh", 9, FileTypeAction.ViewModel, true);
-            InitFileType(".yvr", "Vehicle Record", 9, FileTypeAction.ViewYvr, true);
-            InitFileType(".ywr", "Waypoint Record", 9, FileTypeAction.ViewYwr, true);
-            InitFileType(".fxc", "Compiled Shaders", 9, FileTypeAction.ViewFxc, true);
-            InitFileType(".yed", "Expression Dictionary", 9, FileTypeAction.ViewYed, true);
-            InitFileType(".yld", "Cloth Dictionary", 9, FileTypeAction.ViewYld, true);
-            InitFileType(".yfd", "Frame Filter Dictionary", 9, FileTypeAction.ViewYfd, true);
-            InitFileType(".asi", "ASI Plugin", 9);
-            InitFileType(".dll", "Dynamic Link Library", 9);
+
+            #region Executable formats
+
             InitFileType(".exe", "Executable", 10);
-            InitFileType(".yft", "Fragment", 11, FileTypeAction.ViewModel, true);
-            InitFileType(".ydr", "Drawable", 11, FileTypeAction.ViewModel, true);
-            InitFileType(".ydd", "Drawable Dictionary", 12, FileTypeAction.ViewModel, true);
-            InitFileType(".cut", "Cutscene", 12, FileTypeAction.ViewCut, true);
-            InitFileType(".ysc", "Script", 13);
-            InitFileType(".ymf", "Manifest", 14, FileTypeAction.ViewYmf, true);
-            InitFileType(".bik", "Bink Video", 15);
+            InitFileType(".xex", "Xbox Executable", 10); // Xbox 360
+            InitSubFileType(".bin", "eboot.bin", "Executable", 10); // PS3 and PS4
+            InitFileType(".elf", "Executable and Linkable Format", 10);
+            InitFileType(".self", "Signed Executable and Linkable Format", 10);
+
+            InitFileType(".asi", "ASI Plugin", 9); // Just a DLL with a special extension, go figure.
+            InitFileType(".dll", "Dynamic Link Library", 9);
+            InitFileType(".prx", "Playstation Relocatable Executable", 10);
+            InitFileType(".sprx", "Signed Playstation Relocatable Executable", 10);
+
+            #endregion
+
+            #region Video formats
+
+            InitFileType(".bik", "Bink Video", 15); // bink 1
+            InitFileType(".bk2", "Bink Video", 15); // bink 2 (used in rdr2)
+
+            #endregion
+
+            #region Image formats
+
             InitFileType(".jpg", "JPEG Image", 16);
             InitFileType(".jpeg", "JPEG Image", 16);
             InitFileType(".gif", "GIF Image", 16);
             InitFileType(".png", "Portable Network Graphics", 16);
             InitFileType(".dds", "DirectDraw Surface", 16);
-            InitFileType(".ytd", "Texture Dictionary", 16, FileTypeAction.ViewYtd, true);
-            InitFileType(".mrf", "Move Network File", 18, FileTypeAction.ViewMrf, true);
-            InitFileType(".ycd", "Clip Dictionary", 18, FileTypeAction.ViewYcd, true);
-            InitFileType(".ypt", "Particle Effect", 18, FileTypeAction.ViewModel, true);
-            InitFileType(".ybn", "Static Collisions", 19, FileTypeAction.ViewModel, true);
-            InitFileType(".ide", "Item Definitions", 20, FileTypeAction.ViewText);
-            InitFileType(".ytyp", "Archetype Definitions", 20, FileTypeAction.ViewYtyp, true);
-            InitFileType(".ymap", "Map Data", 21, FileTypeAction.ViewYmap, true);
-            InitFileType(".ipl", "Item Placements", 21, FileTypeAction.ViewText);
-            InitFileType(".awc", "Audio Wave Container", 22, FileTypeAction.ViewAwc, true);
-            InitFileType(".rel", "Audio Data (REL)", 23, FileTypeAction.ViewRel, true);
-            InitFileType(".nametable", "Name Table", 5, FileTypeAction.ViewNametable);
-            InitFileType(".ypdb", "Pose Matcher Database", 9, FileTypeAction.ViewYpdb, true);
 
-            InitSubFileType(".dat", "cache_y.dat", "Cache File", 6, FileTypeAction.ViewCacheDat, true);
+            #endregion
+
+            #endregion
+
+            #region RAGE resources
+
+            // TODO: Correct names
+            // TODO: Check independent ones too. Some formats always use independent extensions, and never the platform specific ones.
+            InitFileType(".odr", "Drawable", 11, FileTypeAction.ViewModel, true);
+            InitFileType(".oft", "Fragment", 11, FileTypeAction.ViewModel, true);
+            InitFileType(".odd", "Drawable Dictionary", 12, FileTypeAction.ViewModel, true);
+            InitFileType(".otd", "Texture Dictionary", 16, FileTypeAction.ViewYtd, true);
+            InitFileType(".ocd", "Clip Dictionary", 18, FileTypeAction.ViewYcd, true);
+            InitFileType(".obn", "Bounds", 19, FileTypeAction.ViewModel, true);
+            InitFileType(".obd", "Bounds Dictionary", 19, FileTypeAction.ViewModel, true);
+            InitFileType(".obs", "BLENDSHAPE_FILE_EXT", 9);
+            InitFileType(".old", "Cloth Dictionary", 9, FileTypeAction.ViewYld, true);
+            InitFileType(".opm", "PMDICTIONARY_FILE_EXT", 9);
+            InitFileType(".oed", "Expression Dictionary", 9, FileTypeAction.ViewYed, true);
+            InitFileType(".opt", "Particle Effect", 18, FileTypeAction.ViewModel, true);
+            InitFileType(".omt", "Metadata (Binary)", 6, FileTypeAction.ViewYmt, true);
+            InitFileType(".omap", "Map Data", 21, FileTypeAction.ViewYmap, true);
+            InitFileType(".otyp", "Archetype Definitions", 20, FileTypeAction.ViewYtyp, true);
+            InitFileType(".orf", "Move Network File", 18, FileTypeAction.ViewMrf, true);
+            InitFileType(".opdb", "Pose Matcher Database", 9, FileTypeAction.ViewYpdb, true);
+            InitFileType(".onv", "Nav Mesh", 9, FileTypeAction.ViewModel, true);
+            InitFileType(".ohn", "NAVNODES_FILE_EXT", 4);
+            InitFileType(".osc", "Script", 13);
+            InitFileType(".oam", "AUDMESH_FILE_EXT", 4);
+            InitFileType(".opl", "PLACEMENTS_FILE_EXT", 4);
+            InitFileType(".ond", "Path Nodes", 8, FileTypeAction.ViewYnd, true);
+            InitFileType(".ovr", "Vehicle Recording", 9, FileTypeAction.ViewYvr, true);
+            InitFileType(".owr", "Waypoint Recording", 9, FileTypeAction.ViewYwr, true);
+            InitFileType(".omf", "Manifest", 14, FileTypeAction.ViewYmf, true);
+            InitFileType(".onh", "HEIGHTMESH_FILE_EXT", 4);
+            InitFileType(".ofd", "Frame Filter Dictionary", 9, FileTypeAction.ViewYfd, true);
+            InitFileType(".oldb", "TEXT_DATABASE_FILE_EXT", 4);
+
+            #endregion
+                  
+            #region RAGE formats (not a resource)
+
+            InitFileType(".rpf", "Rage Package File", 3);
+
+            InitFileType(".awc", "Audio Wave Container", 22, FileTypeAction.ViewAwc, true);
+            InitFileType(".rel", "Audio Configuration (release builds)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".nametable", "RAVE Name table", 5, FileTypeAction.ViewNametable);
+
+            InitFileType(".sps", "Shader Preset", 5, FileTypeAction.ViewText);
+            InitFileType(".list", "Shader List", 5, FileTypeAction.ViewText);
+
+            InitFileType(".meta", "Metadata (XML)", 6, FileTypeAction.ViewXml);
+            InitFileType(".pso", "Metadata (PSO)", 6, FileTypeAction.ViewJPso, true); // Is this a real file format?
+
+            #endregion
+
+            #region Game formats
+
+            InitFileType(".gxt2", "Global Text Table", 5, FileTypeAction.ViewGxt);
+
+            InitFileType(".gfx", "Scaleform GFx", 7);
+            InitFileType(".ugc", "User-Generated Content", 5, FileTypeAction.ViewText); // JSON-like
+
+            InitSubFileType(".dat", "cache_o.dat", "Cache File", 6, FileTypeAction.ViewCacheDat, true);
+            InitSubFileType(".dat", "cache_o_bank.dat", "Cache File (BANK builds)", 6, FileTypeAction.ViewCacheDat,
+                true);
             InitSubFileType(".dat", "heightmap.dat", "Heightmap", 6, FileTypeAction.ViewHeightmap, true);
             InitSubFileType(".dat", "heightmapheistisland.dat", "Heightmap", 6, FileTypeAction.ViewHeightmap, true);
             InitSubFileType(".dat", "distantlights.dat", "Distant Lights", 6, FileTypeAction.ViewDistantLights);
             InitSubFileType(".dat", "distantlights_hd.dat", "Distant Lights", 6, FileTypeAction.ViewDistantLights);
-        }
-        private void InitFileType(string ext, string name, int imgidx, FileTypeAction defaultAction = FileTypeAction.ViewHex, bool xmlConvertible = false)
+
+            #endregion
+
+            // TODO: Sort these
+            InitFileType(".fxc", "Compiled Shaders", 9, FileTypeAction.ViewFxc, true); // pc and xbox...
+            InitFileType(".cgx", "Compiled Shaders", 9, FileTypeAction.ViewFxc, true); // ps3
+
+            InitFileType(".cut", "Cutscene", 12, FileTypeAction.ViewCut, true);
+            InitFileType(".mrf", "Move Network File", 18, FileTypeAction.ViewMrf, true);
+            InitFileType(".ide", "Item Definitions", 20, FileTypeAction.ViewText);
+            InitFileType(".ipl", "Item Placements", 21, FileTypeAction.ViewText);
+
+
+            InitFileType(".sco", "Script Object", 13);
+            InitFileType(".scd", "Script Debug", 13); // symbols and things
+
+            // prospero files, mostly quick tests.
+            InitFileType(".pft", "Fragment", 11, FileTypeAction.ViewModel, true);
+            InitFileType(".pmf", "Manifest", 14, FileTypeAction.ViewYmf, true);
+            InitFileType(".dat4", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat10", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat15", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat54", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat151", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".ppt", "Particle Effect", 18, FileTypeAction.ViewModel, true);
+            InitFileType(".pbvh", "Bounding Something", 4);
+            InitFileType(".pdr", "Drawable", 11, FileTypeAction.ViewModel, true);
+            InitFileType(".ptyp", "Archetype Definitions", 20, FileTypeAction.ViewYtyp, true);
+            InitFileType(".pdd", "Drawable Dictionary", 12, FileTypeAction.ViewModel, true);
+            InitFileType(".ptd", "Texture Dictionary", 16, FileTypeAction.ViewYtd, true);
+            InitFileType(".pmt", "Metadata (Binary)", 6, FileTypeAction.ViewYmt, true);
+            InitFileType(".pmap", "Map Data", 21, FileTypeAction.ViewYmap, true);
+            InitFileType(".pcd", "Clip Dictionary", 18, FileTypeAction.ViewYcd, true);
+	    }
+
+
+			private void InitFileType(string ext, string name, int imgidx, FileTypeAction defaultAction = FileTypeAction.ViewHex, bool xmlConvertible = false)
         {
             var ft = new FileTypeInfo(ext, name, imgidx, defaultAction, xmlConvertible);
             FileTypes[ext] = ft;
         }
+
+        // NOTE: Will not work for resources!
         private void InitSubFileType(string ext, string subext, string name, int imgidx, FileTypeAction defaultAction = FileTypeAction.ViewHex, bool xmlConvertible = false)
         {
             FileTypeInfo pti = null;
@@ -781,7 +886,7 @@ namespace CodeWalker
 
                         rpf.ScanStructure(UpdateStatus, UpdateErrorLog);
 
-                        if (rpf.LastException != null) //incase of corrupted rpf (or renamed NG encrypted RPF)
+                        if (rpf.LastException != null) //incase of corrupted rpf (or renamed TFIT encrypted RPF)
                         {
                             continue;
                         }
@@ -1671,27 +1776,27 @@ namespace CodeWalker
             f.Show();
             switch (fe)
             {
-                case ".ydr":
+                case ".odr":
                     var ydr = RpfFile.GetFile<YdrFile>(e, data);
                     f.LoadModel(ydr);
                     break;
-                case ".ydd":
+                case ".odd":
                     var ydd = RpfFile.GetFile<YddFile>(e, data);
                     f.LoadModels(ydd);
                     break;
-                case ".yft":
+                case ".oft":
                     var yft = RpfFile.GetFile<YftFile>(e, data);
                     f.LoadModel(yft);
                     break;
-                case ".ybn":
+                case ".obn":
                     var ybn = RpfFile.GetFile<YbnFile>(e, data);
                     f.LoadModel(ybn);
                     break;
-                case ".ypt":
+                case ".opt":
                     var ypt = RpfFile.GetFile<YptFile>(e, data);
                     f.LoadParticles(ypt);
                     break;
-                case ".ynv":
+                case ".onv":
                     var ynv = RpfFile.GetFile<YnvFile>(e, data);
                     f.LoadNavmesh(ynv);
                     break;
@@ -2112,7 +2217,7 @@ namespace CodeWalker
                 var nl = file?.File?.NameLower ?? file?.Name?.ToLowerInvariant();
                 if (!string.IsNullOrEmpty(nl))
                 {
-                    needfolder = nl.EndsWith(".ytd") || nl.EndsWith(".ydr") || nl.EndsWith(".ydd") || nl.EndsWith(".yft") || nl.EndsWith(".ypt") || nl.EndsWith(".awc") || nl.EndsWith(".fxc");
+                    needfolder = nl.EndsWith(".otd") || nl.EndsWith(".odr") || nl.EndsWith(".odd") || nl.EndsWith(".oft") || nl.EndsWith(".opt") || nl.EndsWith(".awc") || nl.EndsWith(".fxc");
                 }
             }
 
@@ -2512,7 +2617,7 @@ namespace CodeWalker
             string relpath = cpath + fname.ToLowerInvariant();
 
 
-            RpfEncryption encryption = RpfEncryption.OPEN;//TODO: select encryption mode
+            RpfEncryption encryption = RpfEncryption.MULTIKEY;
 
             RpfFile newrpf = null;
 
@@ -2558,9 +2663,9 @@ namespace CodeWalker
             }
             if (!IsFilenameOk(fname)) return; //new name contains invalid char(s). don't do anything
 
-            if (!fname.ToLowerInvariant().EndsWith(".ytd"))
+            if (!fname.ToLowerInvariant().EndsWith(".otd"))
             {
-                fname = fname + ".ytd";//make sure it ends with .ytd
+                fname = fname + ".otd";//make sure it ends with .ytd
             }
 
             var ytd = new YtdFile();
@@ -3120,7 +3225,7 @@ namespace CodeWalker
                     //delete an item in the filesystem.
                     if ((item.Folder != null) && (item.Folder.RpfFile == null))
                     {
-                        Directory.Delete(item.FullPath);
+                        Directory.Delete(item.FullPath, true);
                     }
                     else
                     {
@@ -4601,13 +4706,4 @@ namespace CodeWalker
         ViewDistantLights = 26,
         ViewYpdb = 27,
     }
-
-
-
-
-
-
-
-
-
 }

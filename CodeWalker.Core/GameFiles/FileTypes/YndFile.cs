@@ -97,7 +97,7 @@ namespace CodeWalker.GameFiles
 
 
 
-            string areaidstr = Name.ToLowerInvariant().Replace("nodes", "").Replace(".ynd", "");
+            string areaidstr = Name.ToLowerInvariant().Replace("nodes", "").Replace(".ond", "");
             int areaid = 0;
             int.TryParse(areaidstr, out areaid);
             AreaID = areaid;
