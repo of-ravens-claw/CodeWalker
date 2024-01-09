@@ -3,6 +3,22 @@
     This program is for viewing the contents of GTAV RPF archives.
 </div>
 
+## CodeWalker-orbis broken features:
+
+- Textures (Opening #od will cause a crash, and the map view will be all white)
+- Slow map view (likely related to the textures)
+- FXC viewing (different format?)
+- AWC playback (at least when the codec is MP3)
+
+I plan to eventually fix AWC playback and textures, but no promises on FXC viewing. <br/>
+I don't even know if there's a reason to bother with it?<br/>
+ If you care about shaders that much, just look at the source leak.
+
+With that in mind, the other formats seem to work pretty well.<br/>
+If you notice anything broken, open an issue and I'll try to fix it/add it here.
+
+PS: No stupid key shit is required. They're all embedded in the code, enjoy.
+
 ## Requirements:
 - PC version of GTA:V;
 - 4GB RAM (8+ recommended);
