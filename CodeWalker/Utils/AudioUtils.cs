@@ -332,7 +332,7 @@ namespace CodeWalker.Utils
                 }
             }
 
-            var audrpf = rpfman.FindRpfFile("x64\\audio\\audio_rel.rpf");
+            var audrpf = rpfman.FindRpfFile("ps4\\audio\\audio_rel.rpf");
             if (audrpf != null)
             {
                 addRpfDatRels(audrpf);

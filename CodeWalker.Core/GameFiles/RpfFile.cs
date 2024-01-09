@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace CodeWalker.GameFiles
 {
-
     public class RpfFile
     {
         public string Name { get; set; } //name of this RPF file/package
@@ -23,7 +22,7 @@ namespace CodeWalker.GameFiles
         public RpfDirectoryEntry Root { get; set; }
 
         public bool IsAESEncrypted { get; set; }
-        public bool IsNGEncrypted { get; set; }
+        public bool IsMultiKeyEncrypted { get; set; }
 
 
         //offset in the current file
@@ -140,11 +139,11 @@ namespace CodeWalker.GameFiles
             Version = br.ReadUInt32(); //RPF Version - GTAV should be 0x52504637 (1380992567)
             EntryCount = br.ReadUInt32(); //Number of Entries
             NamesLength = br.ReadUInt32();
-            Encryption = (RpfEncryption)br.ReadUInt32(); //0x04E45504F (1313165391): none;  0x0ffffff9 (268435449): AES
+            Encryption = (RpfEncryption)br.ReadUInt32();
 
             if (Version != 0x52504637)
             {
-                throw new Exception("Invalid Resource - not GTAV!");
+                throw new Exception($"Invalid RPF Magic, got ${Version:X}, expected 0x52504637 (RPF7)");
             }
 
             byte[] entriesdata = br.ReadBytes((int)EntryCount * 16); //4x uints each
@@ -153,21 +152,15 @@ namespace CodeWalker.GameFiles
             switch (Encryption)
             {
                 case RpfEncryption.NONE: //no encryption
-                case RpfEncryption.OPEN: //OpenIV style RPF with unencrypted TOC
-                    break;
                 case RpfEncryption.AES:
                     entriesdata = GTACrypto.DecryptAES(entriesdata);
                     namesdata = GTACrypto.DecryptAES(namesdata);
                     IsAESEncrypted = true;
                     break;
-                case RpfEncryption.NG:
-                    entriesdata = GTACrypto.DecryptNG(entriesdata, Name, (uint)FileSize);
-                    namesdata = GTACrypto.DecryptNG(namesdata, Name, (uint)FileSize);
-                    IsNGEncrypted = true;
-                    break;
-                default: //unknown encryption type? assume NG.. never seems to get here
-                    entriesdata = GTACrypto.DecryptNG(entriesdata, Name, (uint)FileSize);
-                    namesdata = GTACrypto.DecryptNG(namesdata, Name, (uint)FileSize);
+                case RpfEncryption.MULTIKEY:
+                    entriesdata = GTACrypto.DecryptMultiKey(entriesdata, Name, (uint)FileSize);
+                    namesdata = GTACrypto.DecryptMultiKey(namesdata, Name, (uint)FileSize);
+                    IsMultiKeyEncrypted = true;
                     break;
             }
 
@@ -228,7 +221,7 @@ namespace CodeWalker.GameFiles
                 if ((e is RpfResourceFileEntry))// && string.IsNullOrEmpty(e.Name))
                 {
                     var rfe = e as RpfResourceFileEntry;
-                    rfe.IsEncrypted = rfe.NameLower.EndsWith(".ysc");//any other way to know..?
+                    rfe.IsEncrypted = rfe.NameLower.EndsWith(".osc");//any other way to know..?
                 }
 
                 AllEntries.Add(e);
@@ -417,7 +410,7 @@ namespace CodeWalker.GameFiles
 
                     string lname = resentry.NameLower;
 
-                    if (lname.EndsWith(".ysc"))
+                    if (lname.EndsWith(".osc"))
                     {
                         updateStatus?.Invoke("Extracting " + resentry.Name + "...");
 
@@ -447,7 +440,7 @@ namespace CodeWalker.GameFiles
                             }
                             else
                             {
-                                decr = GTACrypto.DecryptNG(tbytes, resentry.Name, resentry.FileSize);
+                                decr = GTACrypto.DecryptMultiKey(tbytes, resentry.Name, resentry.FileSize);
                             }
 
 
@@ -551,9 +544,9 @@ namespace CodeWalker.GameFiles
                     {
                         decr = GTACrypto.DecryptAES(tbytes);
                     }
-                    else //if (IsNGEncrypted) //assume the archive is set to NG encryption if not AES... (comment: fix for openIV modded files)
+                    else //if (IsTFITEncrypted) //assume the archive is set to TFIT encryption if not AES... (comment: fix for openIV modded files)
                     {
-                        decr = GTACrypto.DecryptNG(tbytes, entry.Name, entry.FileUncompressedSize);
+                        decr = GTACrypto.DecryptMultiKey(tbytes, entry.Name, entry.FileUncompressedSize);
                     }
                     //else
                     //{ }
@@ -604,9 +597,9 @@ namespace CodeWalker.GameFiles
                     {
                         decr = GTACrypto.DecryptAES(tbytes);
                     }
-                    else //if (IsNGEncrypted) //assume the archive is set to NG encryption if not AES... (comment: fix for openIV modded files)
+                    else //if (IsTFITEncrypted) //assume the archive is set to TFIT encryption if not AES... (comment: fix for openIV modded files)
                     {
-                        decr = GTACrypto.DecryptNG(tbytes, entry.Name, entry.FileSize);
+                        decr = GTACrypto.DecryptMultiKey(tbytes, entry.Name, entry.FileSize);
                     }
                     //else
                     //{ }
@@ -943,50 +936,32 @@ namespace CodeWalker.GameFiles
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         private void WriteHeader(BinaryWriter bw)
         {
-            var namesdata = GetHeaderNamesData();
-            NamesLength = (uint)namesdata.Length;
+            var nameData = GetHeaderNamesData();
+            NamesLength = (uint)nameData.Length;
 
             //ensure there's enough space for the new header, move things if necessary
-            var headersize = GetHeaderBlockCount() * 512;
-            EnsureSpace(bw, null, headersize);
+            var headerSize = GetHeaderBlockCount() * 512;
+            EnsureSpace(bw, null, headerSize);
 
             //entries may have been updated, so need to do this after ensuring header space
-            var entriesdata = GetHeaderEntriesData();
+            var entryData = GetHeaderEntriesData();
 
-            //FileSize = ... //need to make sure this is updated for NG encryption...
+            //FileSize = ... //need to make sure this is updated for TFIT encryption...
             switch (Encryption)
             {
-                case RpfEncryption.NONE: //no encryption
-                case RpfEncryption.OPEN: //OpenIV style RPF with unencrypted TOC
+                case RpfEncryption.NONE:
                     break;
                 case RpfEncryption.AES:
-                    entriesdata = GTACrypto.EncryptAES(entriesdata);
-                    namesdata = GTACrypto.EncryptAES(namesdata);
+                    entryData = GTACrypto.EncryptAES(entryData);
+                    nameData = GTACrypto.EncryptAES(nameData);
                     IsAESEncrypted = true;
                     break;
-                case RpfEncryption.NG:
-                    entriesdata = GTACrypto.EncryptNG(entriesdata, Name, (uint)FileSize);
-                    namesdata = GTACrypto.EncryptNG(namesdata, Name, (uint)FileSize);
-                    IsNGEncrypted = true;
-                    break;
-                default: //unknown encryption type? assume NG.. should never get here!
-                    entriesdata = GTACrypto.EncryptNG(entriesdata, Name, (uint)FileSize);
-                    namesdata = GTACrypto.EncryptNG(namesdata, Name, (uint)FileSize);
+                case RpfEncryption.MULTIKEY:
+                    entryData = GTACrypto.EncryptMultiKey(entryData, Name, (uint)FileSize);
+                    nameData = GTACrypto.EncryptMultiKey(nameData, Name, (uint)FileSize);
+                    IsMultiKeyEncrypted = true;
                     break;
             }
 
@@ -997,10 +972,10 @@ namespace CodeWalker.GameFiles
             bw.Write(EntryCount);
             bw.Write(NamesLength);
             bw.Write((uint)Encryption);
-            bw.Write(entriesdata);
-            bw.Write(namesdata);
+            bw.Write(entryData);
+            bw.Write(nameData);
 
-            WritePadding(bw.BaseStream, StartPos + headersize); //makes sure the actual file can grow...
+            WritePadding(bw.BaseStream, StartPos + headerSize); //makes sure the actual file can grow...
         }
 
 
@@ -1377,7 +1352,7 @@ namespace CodeWalker.GameFiles
             Encryption = encryption;
             Version = 0x52504637; //'RPF7'
             IsAESEncrypted = (encryption == RpfEncryption.AES);
-            IsNGEncrypted = (encryption == RpfEncryption.NG);
+            IsMultiKeyEncrypted = (encryption == RpfEncryption.MULTIKEY);
             StartPos = stream.Position;
             EnsureAllEntries();
             WriteHeader(bw);
@@ -1502,7 +1477,7 @@ namespace CodeWalker.GameFiles
 
 
 
-        public static RpfFile CreateNew(string gtafolder, string relpath, RpfEncryption encryption = RpfEncryption.OPEN)
+        public static RpfFile CreateNew(string gtafolder, string relpath, RpfEncryption encryption = RpfEncryption.MULTIKEY)
         {
             //create a new, empty RPF file in the filesystem
             //this will assume that the folder the file is going into already exists!
@@ -1531,7 +1506,7 @@ namespace CodeWalker.GameFiles
             return file;
         }
 
-        public static RpfFile CreateNew(RpfDirectoryEntry dir, string name, RpfEncryption encryption = RpfEncryption.OPEN)
+        public static RpfFile CreateNew(RpfDirectoryEntry dir, string name, RpfEncryption encryption = RpfEncryption.MULTIKEY)
         {
             //create a new empty RPF inside the given parent RPF directory.
 
@@ -1895,37 +1870,7 @@ namespace CodeWalker.GameFiles
         public static bool EnsureValidEncryption(RpfFile file, Func<RpfFile, bool> confirm)
         {
             if (file == null) return false;
-
-            //currently assumes OPEN is the valid encryption type.
-            //TODO: support other encryption types!
-
-            bool needsupd = false;
-            var f = file;
-            List<RpfFile> files = new List<RpfFile>();
-            while (f != null)
-            {
-                if (f.Encryption != RpfEncryption.OPEN)
-                {
-                    if (!confirm(f))
-                    {
-                        return false;
-                    }
-                    needsupd = true;
-                }
-                if (needsupd)
-                {
-                    files.Add(f);
-                }
-                f = f.Parent;
-            }
-
-            //change encryption types, starting from the root rpf.
-            files.Reverse();
-            foreach (var cfile in files)
-            {
-                SetEncryptionType(cfile, RpfEncryption.OPEN);
-            }
-
+            // This is junk. There's no such thing as an "invalid encryption"
             return true;
         }
 
@@ -2070,11 +2015,13 @@ namespace CodeWalker.GameFiles
 
     public enum RpfEncryption : uint
     {
-        NONE = 0, //some modded RPF's may use this
-        OPEN = 0x4E45504F, //1313165391 "OPEN", ie. "no encryption"
-        AES =  0x0FFFFFF9, //268435449
-        NG =   0x0FEFFFFF, //267386879
-    }
+	    // See RageCore's aes.h for the key ids
+
+		NONE = 0,
+        AES = 0x0FFFFF00, // AES_KEY_ID_RAGE, PS4 doesn't support AES.
+	    MULTIKEY = 0x0FFEFFFF, // AES_MULTIKEY_ID_GTA5_PS4
+        // TFIT (aka NG) doesn't exist on PS4.
+	  }
 
 
     [TypeConverter(typeof(ExpandableObjectConverter))] public abstract class RpfEntry

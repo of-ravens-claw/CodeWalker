@@ -75,7 +75,7 @@ namespace CodeWalker.Tools
 
                     byte[] odata = ydr.Save();
 
-                    OutputFiles.Add(fname + ".ydr", odata);
+                    OutputFiles.Add(fname + ".odr", odata);
                 }
 
                 UpdateStatus("Process complete.");

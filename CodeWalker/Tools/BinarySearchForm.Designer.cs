@@ -298,7 +298,7 @@
             this.RpfSearchIgnoreTextBox.Name = "RpfSearchIgnoreTextBox";
             this.RpfSearchIgnoreTextBox.Size = new System.Drawing.Size(198, 20);
             this.RpfSearchIgnoreTextBox.TabIndex = 59;
-            this.RpfSearchIgnoreTextBox.Text = ".ydr, .ydd, .ytd, .yft, .ybn, .ycd, .awc, .bik";
+            this.RpfSearchIgnoreTextBox.Text = ".odr, .odd, .otd, .oft, .obn, .ocd, .awc, .bik";
             // 
             // RpfSearchIgnoreCheckBox
             // 
@@ -435,7 +435,7 @@
             this.RpfSearchOnlyTextBox.Name = "RpfSearchOnlyTextBox";
             this.RpfSearchOnlyTextBox.Size = new System.Drawing.Size(198, 20);
             this.RpfSearchOnlyTextBox.TabIndex = 66;
-            this.RpfSearchOnlyTextBox.Text = ".ysc, .rel";
+            this.RpfSearchOnlyTextBox.Text = ".osc, .rel";
             // 
             // RpfSearchOnlyCheckBox
             // 

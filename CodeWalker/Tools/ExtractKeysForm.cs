@@ -113,7 +113,8 @@ namespace CodeWalker.Tools
 
 
                     byte[] exedat = File.ReadAllBytes(exepath);
-                    GTA5Keys.GenerateV2(exedat, UpdateStatus);
+                    GTA5Keys.SetKeys();
+                    
 
 
                     UpdateStatus("Saving found keys...");

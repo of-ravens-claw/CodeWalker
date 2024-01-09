@@ -266,55 +266,55 @@ namespace CodeWalker.GameFiles
             {
                 mformat = MetaFormat.AudioRel;
             }
-            if (fnamel.EndsWith(".ynd.xml"))
+            if (fnamel.EndsWith(".ond.xml"))
             {
                 mformat = MetaFormat.Ynd;
             }
-            if (fnamel.EndsWith(".ynv.xml"))
+            if (fnamel.EndsWith(".onv.xml"))
             {
                 mformat = MetaFormat.Ynv;
             }
-            if (fnamel.EndsWith(".ycd.xml"))
+            if (fnamel.EndsWith(".ocd.xml"))
             {
                 mformat = MetaFormat.Ycd;
             }
-            if (fnamel.EndsWith(".ybn.xml"))
+            if (fnamel.EndsWith(".obn.xml"))
             {
                 mformat = MetaFormat.Ybn;
             }
-            if (fnamel.EndsWith(".ytd.xml"))
+            if (fnamel.EndsWith(".otd.xml"))
             {
                 mformat = MetaFormat.Ytd;
             }
-            if (fnamel.EndsWith(".ydr.xml"))
+            if (fnamel.EndsWith(".odr.xml"))
             {
                 mformat = MetaFormat.Ydr;
             }
-            if (fnamel.EndsWith(".ydd.xml"))
+            if (fnamel.EndsWith(".odd.xml"))
             {
                 mformat = MetaFormat.Ydd;
             }
-            if (fnamel.EndsWith(".yft.xml"))
+            if (fnamel.EndsWith(".oft.xml"))
             {
                 mformat = MetaFormat.Yft;
             }
-            if (fnamel.EndsWith(".ypt.xml"))
+            if (fnamel.EndsWith(".opt.xml"))
             {
                 mformat = MetaFormat.Ypt;
             }
-            if (fnamel.EndsWith(".yld.xml"))
+            if (fnamel.EndsWith(".old.xml"))
             {
                 mformat = MetaFormat.Yld;
             }
-            if (fnamel.EndsWith(".yed.xml"))
+            if (fnamel.EndsWith(".oed.xml"))
             {
                 mformat = MetaFormat.Yed;
             }
-            if (fnamel.EndsWith(".ywr.xml"))
+            if (fnamel.EndsWith(".owr.xml"))
             {
                 mformat = MetaFormat.Ywr;
             }
-            if (fnamel.EndsWith(".yvr.xml"))
+            if (fnamel.EndsWith(".ovr.xml"))
             {
                 mformat = MetaFormat.Yvr;
             }
@@ -326,7 +326,7 @@ namespace CodeWalker.GameFiles
             {
                 mformat = MetaFormat.Fxc;
             }
-            if (fnamel.EndsWith("cache_y.dat.xml"))
+            if (fnamel.EndsWith("cache_o.dat.xml"))
             {
                 mformat = MetaFormat.CacheFile;
             }
@@ -334,11 +334,11 @@ namespace CodeWalker.GameFiles
             {
                 mformat = MetaFormat.Heightmap;
             }
-            if (fnamel.EndsWith(".ypdb.xml"))
+            if (fnamel.EndsWith(".opdb.xml"))
             {
                 mformat = MetaFormat.Ypdb;
             }
-            if (fnamel.EndsWith(".yfd.xml"))
+            if (fnamel.EndsWith(".ofd.xml"))
             {
                 mformat = MetaFormat.Yfd;
             }

@@ -526,7 +526,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 47;
-            this.label4.Text = ".ymap";
+            this.label4.Text = ".omap";
             // 
             // label5
             // 
@@ -555,7 +555,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 44;
-            this.label3.Text = ".ymap";
+            this.label3.Text = ".omap";
             // 
             // label2
             // 

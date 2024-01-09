@@ -1575,18 +1575,18 @@ namespace CodeWalker.Project
             if (files == null)
             {
                 string[] filetypes = {
-                    "All supported|*.ymap;*.ytyp;*.ybn;*.ydr;*.ydd;*.yft;*.ytd;*.ynd;*.ynv;*.dat;*.ymt;*.rel",
-                    "Ymap files|*.ymap",
-                    "Ytyp files|*.ytyp",
-                    "Ybn files|*.ybn",
-                    "Ydr files|*.ydr",
-                    "Ydd files|*.ydd",
-                    "Yft files|*.yft",
-                    "Ytd files|*.ytd",
-                    "Ynd files|*.ynd",
-                    "Ynv files|*.ynv",
+                    "All supported|*.omap;*.otyp;*.obn;*.odr;*.odd;*.oft;*.otd;*.ond;*.onv;*.dat;*.omt;*.rel",
+                    "Imap files|*.omap",
+                    "Ityp files|*.otyp",
+                    "Ibn files|*.obn",
+                    "Idr files|*.odr",
+                    "Idd files|*.odd",
+                    "Ift files|*.oft",
+                    "Itd files|*.otd",
+                    "Ind files|*.ond",
+                    "Inv files|*.onv",
                     "Dat files|*.dat",
-                    "Ymt files|*.ymt",
+                    "Imt files|*.omt",
                     "Rel files|*.rel",
                     "All files|*.*"
                 };
@@ -1612,43 +1612,43 @@ namespace CodeWalker.Project
                     var ext = Path.GetExtension(fl);
                     switch (ext)
                     {
-                        case ".ymap":
+                        case ".omap":
                             var ymap = CurrentProjectFile.AddYmapFile(file);
                             if (ymap != null) LoadYmapFromFile(ymap, file);
                             break;
-                        case ".ytyp":
+                        case ".otyp":
                             var ytyp = CurrentProjectFile.AddYtypFile(file);
                             if (ytyp != null) LoadYtypFromFile(ytyp, file);
                             break;
-                        case ".ybn":
+                        case ".obn":
                             var ybn = CurrentProjectFile.AddYbnFile(file);
                             if (ybn != null) LoadYbnFromFile(ybn, file);
                             break;
-                        case ".ydr":
+                        case ".odr":
                             var ydr = CurrentProjectFile.AddYdrFile(file);
                             if (ydr != null) LoadYdrFromFile(ydr, file);
                             break;
-                        case ".ydd":
+                        case ".odd":
                             var ydd = CurrentProjectFile.AddYddFile(file);
                             if (ydd != null) LoadYddFromFile(ydd, file);
                             break;
-                        case ".yft":
+                        case ".oft":
                             var yft = CurrentProjectFile.AddYftFile(file);
                             if (yft != null) LoadYftFromFile(yft, file);
                             break;
-                        case ".ytd":
+                        case ".otd":
                             var ytd = CurrentProjectFile.AddYtdFile(file);
                             if (ytd != null) LoadYtdFromFile(ytd, file);
                             break;
-                        case ".ynd":
+                        case ".ond":
                             var ynd = CurrentProjectFile.AddYndFile(file);
                             if (ynd != null) LoadYndFromFile(ynd, file);
                             break;
-                        case ".ynv":
+                        case ".onv":
                             var ynv = CurrentProjectFile.AddYnvFile(file);
                             if (ynv != null) LoadYnvFromFile(ynv, file);
                             break;
-                        case ".ymt":
+                        case ".omt":
                             var ymtdata = File.ReadAllBytes(file);
                             var ymt = new YmtFile();
                             ymt.Load(ymtdata);
@@ -1937,7 +1937,7 @@ namespace CodeWalker.Project
             bool filenameok = false;
             while (!filenameok)
             {
-                fname = "map" + testi.ToString() + ".ymap";
+                fname = "map" + testi.ToString() + ".omap";
                 filenameok = !CurrentProjectFile.ContainsYmap(fname);
                 testi++;
             }
@@ -1980,7 +1980,7 @@ namespace CodeWalker.Project
                 saveas = saveas || string.IsNullOrEmpty(filepath);
                 if (saveas)
                 {
-                    filepath = ShowSaveDialog("Ymap files|*.ymap", filepath);
+                    filepath = ShowSaveDialog("Imap files|*.omap", filepath);
                     if (string.IsNullOrEmpty(filepath))
                     { return; }
                 }
@@ -3156,7 +3156,7 @@ namespace CodeWalker.Project
 
 
 
-            string fname = menyooXml.Name + ".ymap";
+            string fname = menyooXml.Name + ".omap";
             lock (ProjectSyncRoot)
             {
                 YmapFile ymap = CurrentProjectFile.AddYmapFile(fname);
@@ -3300,7 +3300,7 @@ namespace CodeWalker.Project
             bool filenameok = false;
             while (!filenameok)
             {
-                fname = "types" + testi.ToString() + ".ytyp";
+                fname = "types" + testi.ToString() + ".otyp";
                 filenameok = !CurrentProjectFile.ContainsYtyp(fname);
                 testi++;
             }
@@ -3993,7 +3993,7 @@ namespace CodeWalker.Project
             bool filenameok = false;
             while (!filenameok)
             {
-                fname = "bounds" + testi.ToString() + ".ybn";
+                fname = "bounds" + testi.ToString() + ".obn";
                 filenameok = !CurrentProjectFile.ContainsYbn(fname);
                 testi++;
             }
@@ -4619,7 +4619,7 @@ namespace CodeWalker.Project
             bool filenameok = false;
             while (!filenameok)
             {
-                fname = "nodes" + testi.ToString() + ".ynd";
+                fname = "nodes" + testi.ToString() + ".ond";
                 filenameok = !CurrentProjectFile.ContainsYnd(fname);
                 testi++;
             }
@@ -4906,7 +4906,7 @@ namespace CodeWalker.Project
             bool filenameok = false;
             while (!filenameok)
             {
-                fname = "navmesh" + testi.ToString() + ".ynv";
+                fname = "navmesh" + testi.ToString() + ".onv";
                 filenameok = !CurrentProjectFile.ContainsYnv(fname);
                 testi++;
             }
@@ -5324,7 +5324,7 @@ namespace CodeWalker.Project
             bool filenameok = false;
             while (!filenameok)
             {
-                fname = "scenario" + testi.ToString() + ".ymt";
+                fname = "scenario" + testi.ToString() + ".omt";
                 filenameok = !CurrentProjectFile.ContainsScenario(fname);
                 testi++;
             }

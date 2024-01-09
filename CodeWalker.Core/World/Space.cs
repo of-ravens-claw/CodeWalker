@@ -277,7 +277,7 @@ namespace CodeWalker.World
             {
                 foreach (var entry in maprpf.AllEntries)
                 {
-                    if (entry.NameLower.EndsWith(".ymap"))
+                    if (entry.NameLower.EndsWith(".omap"))
                     {
                         if (!nodedict.ContainsKey(new MetaHash(entry.ShortNameHash)))
                         {
@@ -297,7 +297,7 @@ namespace CodeWalker.World
                             { }
                         }
                     }
-                    if (entry.NameLower.EndsWith(".ybn"))
+                    if (entry.NameLower.EndsWith(".obn"))
                     {
                         MetaHash ehash = new MetaHash(entry.ShortNameHash);
                         if (!usedboundsdict.ContainsKey(ehash))
@@ -367,7 +367,7 @@ namespace CodeWalker.World
                 }
                 foreach (var dlcrpf in GameFileCache.DlcActiveRpfs) //load nodes from current dlc rpfs
                 {
-                    if (dlcrpf.Path.StartsWith("x64")) continue; //don't override update.rpf YNDs with x64 ones! *hack
+                    if (dlcrpf.Path.StartsWith("ps4")) continue; //don't override update.rpf YNDs with x64 ones! *hack
                     foreach (var rpffile in dlcrpf.Children)
                     {
                         AddRpfYnds(rpffile, yndentries);
@@ -384,7 +384,7 @@ namespace CodeWalker.World
                 for (int y = 0; y < NodeGrid.CellCountY; y++)
                 {
                     var cell = NodeGrid.Cells[x, y];
-                    string fname = "nodes" + cell.ID + ".ynd";
+                    string fname = "nodes" + cell.ID + ".ond";
                     uint fnhash = JenkHash.GenHash(fname);
                     RpfFileEntry fentry = null;
                     if (yndentries.TryGetValue(fnhash, out fentry))
@@ -509,7 +509,7 @@ namespace CodeWalker.World
                 if (entry is RpfFileEntry)
                 {
                     RpfFileEntry fentry = entry as RpfFileEntry;
-                    if (entry.NameLower.EndsWith(".ynd"))
+                    if (entry.NameLower.EndsWith(".ond"))
                     {
                         if (yndentries.ContainsKey(entry.NameHash))
                         { }
@@ -851,7 +851,7 @@ namespace CodeWalker.World
                 if (entry is RpfFileEntry)
                 {
                     RpfFileEntry fentry = entry as RpfFileEntry;
-                    if (entry.NameLower.EndsWith(".ynv"))
+                    if (entry.NameLower.EndsWith(".onv"))
                     {
                         if (ynventries.ContainsKey(entry.NameHash))
                         { }

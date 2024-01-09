@@ -146,7 +146,7 @@
             this.FileMatchTextBox.Name = "FileMatchTextBox";
             this.FileMatchTextBox.Size = new System.Drawing.Size(198, 20);
             this.FileMatchTextBox.TabIndex = 73;
-            this.FileMatchTextBox.Text = ".ymt";
+            this.FileMatchTextBox.Text = ".omt";
             // 
             // MatchEndsWithRadio
             // 

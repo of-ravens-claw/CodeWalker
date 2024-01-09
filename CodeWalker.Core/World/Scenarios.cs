@@ -47,16 +47,16 @@ namespace CodeWalker.World
             //int maxcells = 0;
 
             var rpfman = gameFileCache.RpfMan;
-            string manifestfilename = "update\\update.rpf\\x64\\levels\\gta5\\sp_manifest.ymt";
+            string manifestfilename = "update\\update.rpf\\ps4\\levels\\gta5\\sp_manifest.omt";
             YmtFile manifestymt = rpfman.GetFile<YmtFile>(manifestfilename);
             if ((manifestymt != null) && (manifestymt.CScenarioPointManifest != null))
             {
 
                 foreach (var region in manifestymt.CScenarioPointManifest.RegionDefs)
                 {
-                    string regionfilename = region.Name.ToString() + ".ymt"; //JenkIndex lookup... ymt should have already loaded path strings into it! maybe change this...
-                    string basefilename = regionfilename.Replace("platform:", "x64a.rpf");
-                    string updfilename = regionfilename.Replace("platform:", "update\\update.rpf\\x64");
+                    string regionfilename = region.Name.ToString() + ".omt"; //JenkIndex lookup... ymt should have already loaded path strings into it! maybe change this...
+                    string basefilename = regionfilename.Replace("platform:", "ps4a.rpf");
+                    string updfilename = regionfilename.Replace("platform:", "update\\update.rpf\\ps4");
                     string usefilename = updfilename;
 
                     if (!gameFileCache.EnableDlc)
