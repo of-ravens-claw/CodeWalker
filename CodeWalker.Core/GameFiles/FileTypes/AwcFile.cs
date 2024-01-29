@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using TC = System.ComponentModel.TypeConverterAttribute;
 using EXP = System.ComponentModel.ExpandableObjectConverter;
 using System.Xml;
+using NAudio.Lame;
+using NAudio.Utils;
+using NAudio.Wave;
 
 namespace CodeWalker.GameFiles
 {
@@ -790,33 +793,34 @@ namespace CodeWalker.GameFiles
         }
     }
 
-	// ReSharper disable InconsistentNaming
-	// ReSharper disable IdentifierTypo
-	public enum AwcCodecType // audStreamFormat
-	{
-		// PCM formats are supported on all platforms.
-		// Little Endian: PC, Orbis, Durango
-		// Big Endian: Xenon, Cell
-		kPcm16bitLittleEndian = 0,
-		kPcm16bitBigEndian,
-		kPcm32FLittleEndian,
-		kPcm32FBigEndian,
-		kAdpcm,
+    // ReSharper disable InconsistentNaming
+    // ReSharper disable IdentifierTypo
+    public enum AwcCodecType // audStreamFormat
+    {
+        // PCM formats are supported on all platforms.
+        // Little Endian: PC, Orbis, Durango
+        // Big Endian: Xenon, Cell
+        kPcm16bitLittleEndian = 0,
+        kPcm16bitBigEndian,
+        kPcm32FLittleEndian,
+        kPcm32FBigEndian,
+        kAdpcm,
 
-		// Non PCM formats
-		kXMA2, // Xenon and Durango only
-		kXWMA, // Unused
+        // Non PCM formats
+        kXMA2, // Xenon and Durango only
+        kXWMA, // Unused
 
-		kMP3, // Cell and Orbis only
-		kOgg, // Unused
-		kAAC, // Unused
-		kWMA, // Unused
-		kAtrac9 // Orbis only, disabled in the code.
-	}
-	// ReSharper restore InconsistentNaming
-	// ReSharper restore IdentifierTypo
+        kMP3, // Cell and Orbis only, may be used on Prospero as well!
+        kOgg, // Unused
+        kAAC, // Unused
+        kWMA, // Unused
+        kAtrac9 // Orbis only, disabled in the code.
+                // Also supported on the PSP2 and Prospero but again, it's *disabled*.
+    }
+    // ReSharper restore InconsistentNaming
+    // ReSharper restore IdentifierTypo
 
-	  [TC(typeof(EXP))] public class AwcStreamInfo
+    [TC(typeof(EXP))] public class AwcStreamInfo
     {
         public uint RawVal { get; set; }
         public uint ChunkCount { get; set; }
@@ -1051,7 +1055,7 @@ namespace CodeWalker.GameFiles
                         codec = "WMA";
                         break;
                     case AwcCodecType.kAtrac9:
-                        codec = "Atrac9";
+                        codec = "ATRAC9";
                         break;
                     default: // Unless Rockstar adds a new Codec, this will likely never hit.
                         codec = "Unknown";
@@ -1563,15 +1567,29 @@ namespace CodeWalker.GameFiles
 
         public byte[] GetPcmData()
         {
-            var data = GetRawData();
+	        var data = GetRawData();
 
-            var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.kPcm16bitLittleEndian;
-            if (codec == AwcCodecType.kAdpcm)//just convert ADPCM to PCM for compatibility reasons
-            {
-                data = ADPCMCodec.DecodeADPCM(data, SampleCount);
-            }
+	        var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.kPcm16bitLittleEndian;
+	        switch (codec)
+	        {
+		        // Convert to PCM for compatibility reasons
+		        case AwcCodecType.kAdpcm:
+			        data = ADPCMCodec.DecodeADPCM(data, SampleCount);
+			        break;
 
-            return data;
+		        case AwcCodecType.kMP3:
+			        using (var mp3MemoryStream = new MemoryStream(data))
+			        using (var mp3Reader = new Mp3FileReader(mp3MemoryStream))
+			        using (var pcmMemoryStream = new MemoryStream())
+			        using (var pcmStream = WaveFormatConversionStream.CreatePcmStream(mp3Reader))
+			        {
+				        pcmStream.CopyTo(pcmMemoryStream);
+				        data = pcmMemoryStream.ToArray();
+			        }
+			        break;
+	        }
+
+	        return data;
         }
 
         public byte[] GetWavFile()
@@ -1684,10 +1702,30 @@ namespace CodeWalker.GameFiles
             var sampleCount = datalen * 2; //assume 16bits per sample PCM
 
             var codec = StreamFormat?.Codec ?? FormatChunk?.Codec ?? AwcCodecType.kPcm16bitLittleEndian;
-            if (codec == AwcCodecType.kAdpcm)// convert PCM wav to ADPCM where required
+            switch (codec)
             {
-                dataPCM = ADPCMCodec.EncodeADPCM(dataPCM, sampleCount);
-                bitsPerSample = 4;
+	            // convert PCM wav to ADPCM where required
+	            case AwcCodecType.kAdpcm:
+		            dataPCM = ADPCMCodec.EncodeADPCM(dataPCM, sampleCount);
+		            bitsPerSample = 4;
+		            break;
+
+	            case AwcCodecType.kMP3:
+		            using (var pcmStream = new MemoryStream(wav))
+		            using (var mp3Stream = new MemoryStream())
+		            {
+			            var pcmWaveFormat = new WaveFormat(sampleRate, 16, channels);
+
+			            using (var reader = new WaveFileReader(new IgnoreDisposeStream(pcmStream)))
+			            using (var writer = new LameMP3FileWriter(new IgnoreDisposeStream(mp3Stream), pcmWaveFormat, LAMEPreset.VBR_90))
+			            {
+				            reader.CopyTo(writer);
+			            }
+
+			            dataPCM = mp3Stream.ToArray();
+		            }
+
+		            break;
             }
 
 
@@ -1720,7 +1758,6 @@ namespace CodeWalker.GameFiles
 
 
     }
-
 
     public enum AwcChunkType : byte
     {
@@ -3170,10 +3207,6 @@ namespace CodeWalker.GameFiles
 
     }
 
-
-
-
-
     public class AwcXml : MetaXmlBase
     {
 
@@ -3218,8 +3251,5 @@ namespace CodeWalker.GameFiles
         }
 
     }
-
-
-
 
 }
