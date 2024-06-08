@@ -21,8 +21,6 @@ namespace CodeWalker.Peds
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new PedsForm());
-
-            GTAFolder.UpdateSettings();
         }
     }
 }
