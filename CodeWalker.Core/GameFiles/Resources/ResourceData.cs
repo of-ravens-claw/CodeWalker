@@ -599,10 +599,6 @@ namespace CodeWalker.GameFiles
 
     }
 
-
-
-
-
     /// <summary>
     /// Represents a data block in a resource file.
     /// </summary>
@@ -653,15 +649,13 @@ namespace CodeWalker.GameFiles
     /// <summary>
     /// Represents a data block of the graphics segmenet in a resource file.
     /// </summary>
-    public interface IResourceGraphicsBlock : IResourceBlock
-    { }
+    public interface IResourceGraphicsBlock : IResourceBlock { }
 
 
     /// <summary>
     /// Represents a data block that won't get cached while loading.
     /// </summary>
-    public interface IResourceNoCacheBlock : IResourceBlock
-    { }
+    public interface IResourceNoCacheBlock : IResourceBlock { }
 
 
 
@@ -677,10 +671,7 @@ namespace CodeWalker.GameFiles
         /// </summary>
         public virtual long FilePosition
         {
-            get
-            {
-                return position;
-            }
+            get { return position; }
             set
             {
                 position = value;
@@ -694,10 +685,7 @@ namespace CodeWalker.GameFiles
         /// <summary>
         /// Gets the length of the data block.
         /// </summary>
-        public abstract long BlockLength
-        {
-            get;
-        }
+        public abstract long BlockLength { get; }
 
         /// <summary>
         /// Reads the data block.
@@ -739,19 +727,12 @@ namespace CodeWalker.GameFiles
         /// <summary>
         /// Gets or sets the position of the data block.
         /// </summary>
-        public virtual long FilePosition
-        {
-            get;
-            set;
-        }
+        public virtual long FilePosition { get; set; }
 
         /// <summary>
         /// Gets the length of the data block.
         /// </summary>
-        public abstract long BlockLength
-        {
-            get;
-        }
+        public abstract long BlockLength { get; }
 
         /// <summary>
         /// Reads the data block.
@@ -763,17 +744,4 @@ namespace CodeWalker.GameFiles
         /// </summary>
         public abstract void Write(ResourceDataWriter writer, params object[] parameters);
     }
-
-
-
-
-
-
-
-    //public interface ResourceDataStruct
-    //{
-    //    void Read(ResourceDataReader reader);
-    //    void Write(ResourceDataWriter writer);
-    //}
-
 }
