@@ -262,6 +262,42 @@ namespace CodeWalker.GameFiles
                 mformat = MetaFormat.RBF;
                 trimlength = 8;
             }
+            if (fnamel.EndsWith(".dat4.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat10.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat15.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat16.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat22.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat54.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat149.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat150.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
+            if (fnamel.EndsWith(".dat151.xml"))
+            {
+                mformat = MetaFormat.AudioRel;
+            }
             if (fnamel.EndsWith(".rel.xml"))
             {
                 mformat = MetaFormat.AudioRel;

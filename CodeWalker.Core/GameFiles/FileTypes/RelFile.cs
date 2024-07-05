@@ -1216,7 +1216,14 @@ namespace CodeWalker.GameFiles
                 var ss = rd as Dat4SpeechData;
                 if (rs?.Header != null)
                 {
-                    rdoffset += 1 + rs.Header.CalcHeaderLength();
+                    if (rd.Rel.RelType == RelDatFileType.Dat54DataEntries)
+                    {
+                        rdoffset += 4 + rs.Header.CalcHeaderLength();
+                    }
+                    else
+                    {
+                        rdoffset += 1 + rs.Header.CalcHeaderLength();
+                    }
                 }
                 else if (ss == null)//don't add 4 for speech!
                 {
@@ -1271,7 +1278,14 @@ namespace CodeWalker.GameFiles
                 var ss = rd as Dat4SpeechData;
                 if (rs?.Header != null)
                 {
-                    rdoffset += 1 + rs.Header.CalcHeaderLength();
+                    if (rd.Rel.RelType == RelDatFileType.Dat54DataEntries)
+                    {
+                        rdoffset += 4 + rs.Header.CalcHeaderLength();
+                    }
+                    else
+                    {
+                        rdoffset += 1 + rs.Header.CalcHeaderLength();
+                    }
                 }
                 else if (ss == null)//don't add 4 for speech!
                 {
@@ -1667,7 +1681,9 @@ namespace CodeWalker.GameFiles
         public uint DataOffset { get; set; }
         public uint DataLength { get; set; }
         public byte[] Data { get; set; }
+        
         public byte TypeID { get; set; }
+        public uint NameTableOffset { get; set; } // TODO: Really should be somewhere else, RelSound, maybe?
 
         public RelFile Rel { get; set; }
 
@@ -1681,11 +1697,23 @@ namespace CodeWalker.GameFiles
             Data = d.Data;
             TypeID = d.TypeID;
             Rel = d.Rel;
+
+            if (Rel.RelType == RelDatFileType.Dat54DataEntries)
+            {
+                NameTableOffset = d.NameTableOffset;
+            }
         }
 
         public void ReadType(BinaryReader br)
         {
             TypeID = br.ReadByte();
+
+            // This is shitty, but I see no other way...
+            if (Rel.RelType == RelDatFileType.Dat54DataEntries)
+            {
+                br.BaseStream.Position = 0; // 1 byte was read already (TypeID)
+                NameTableOffset = ((br.ReadUInt32() >> 8) & 0xFFFFFF);
+            }
         }
 
         public virtual uint[] GetHashTableOffsets()
@@ -2134,7 +2162,9 @@ namespace CodeWalker.GameFiles
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write(TypeID);
+            var val = ((NameTableOffset & 0xFFFFFF) << 8) + TypeID;
+            bw.Write(val);
+
             Header?.Write(bw);
         }
 
@@ -25108,6 +25138,10 @@ namespace CodeWalker.GameFiles
             }
 
             var ntoffset = "";
+            if (rel.RelType == RelDatFileType.Dat54DataEntries)
+            {
+                ntoffset = " ntOffset=\"" + item.NameTableOffset.ToString() + "\"";
+            }
             var dat151item = item as Dat151RelData;
             if (dat151item != null)
             {
@@ -25301,7 +25335,10 @@ namespace CodeWalker.GameFiles
                     rd.ReadXml(item);
                     itemslist.Add(rd);
 
-
+                    if (reltype == RelDatFileType.Dat54DataEntries)
+                    {
+                        rd.NameTableOffset = ntoffset;
+                    }
                     var dat151data = rd as Dat151RelData;
                     if (dat151data != null)
                     {

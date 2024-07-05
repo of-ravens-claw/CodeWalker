@@ -1800,15 +1800,55 @@ namespace CodeWalker.GameFiles
                     if (entry is RpfFileEntry)
                     {
                         RpfFileEntry fentry = entry as RpfFileEntry;
+                        if (entry.NameLower.EndsWith(".dat4"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat10"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat15"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat16"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat22"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat54"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat149"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat150"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+                        if (entry.NameLower.EndsWith(".dat151"))
+                        {
+                            datrelentries[entry.NameHash] = fentry;
+                        }
+
+                        // no release audio support for now, maybe never.
+                        /*
                         if (entry.NameLower.EndsWith(".rel"))
                         {
                             datrelentries[entry.NameHash] = fentry;
                         }
+                        */
                     }
                 }
             }
 
-            var audrpf = RpfMan.FindRpfFile("x64\\audio\\audio_rel.rpf");
+            var audrpf = RpfMan.FindRpfFile("x64\\audio\\audio.rpf");
             if (audrpf != null)
             {
                 addRpfDatRelEntries(audrpf);

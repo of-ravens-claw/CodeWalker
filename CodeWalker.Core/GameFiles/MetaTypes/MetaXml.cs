@@ -52,6 +52,51 @@ namespace CodeWalker.GameFiles
                 CutFile cut = RpfFile.GetFile<CutFile>(e, data);
                 return GetXml(cut, out filename);
             }
+            else if (fnl.EndsWith(".dat4"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat10"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat15"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat16"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat22"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat54"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat149"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat150"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
+            else if (fnl.EndsWith(".dat151"))
+            {
+                RelFile rel = RpfFile.GetFile<RelFile>(e, data);
+                return GetXml(rel, out filename);
+            }
             else if (fnl.EndsWith(".rel"))
             {
                 RelFile rel = RpfFile.GetFile<RelFile>(e, data);

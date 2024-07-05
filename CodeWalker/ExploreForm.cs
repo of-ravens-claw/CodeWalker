@@ -308,7 +308,7 @@ namespace CodeWalker
             InitFileType(".ymap", "Map Data", 21, FileTypeAction.ViewYmap, true);
             InitFileType(".ipl", "Item Placements", 21, FileTypeAction.ViewText);
             InitFileType(".awc", "Audio Wave Container", 22, FileTypeAction.ViewAwc, true);
-            InitFileType(".rel", "Audio Data (REL)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".rel", "Audio Data (Release)", 23, FileTypeAction.ViewRel, true); // NOTE: This is a bit broken, I'm not turning it off, but .dat54.rel WILL NOT LOAD PROPERLY!!!
             InitFileType(".nametable", "Name Table", 5, FileTypeAction.ViewNametable);
             InitFileType(".ypdb", "Pose Matcher Database", 9, FileTypeAction.ViewYpdb, true);
 
@@ -317,6 +317,18 @@ namespace CodeWalker
             InitSubFileType(".dat", "heightmapheistisland.dat", "Heightmap", 6, FileTypeAction.ViewHeightmap, true);
             InitSubFileType(".dat", "distantlights.dat", "Distant Lights", 6, FileTypeAction.ViewDistantLights);
             InitSubFileType(".dat", "distantlights_hd.dat", "Distant Lights", 6, FileTypeAction.ViewDistantLights);
+
+            InitFileType(".dat4", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat10", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat15", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat16", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat22", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat54", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            
+            // Not sure what was changed in schema between these three, 149 is used by ps3/360, 150 is not used anywhere (as far as I know), 151 is used by ps4/xb1/win64, not sure what gen9 uses.
+            InitFileType(".dat149", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat150", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".dat151", "Audio Data (Bank)", 23, FileTypeAction.ViewRel, true);
         }
         private void InitFileType(string ext, string name, int imgidx, FileTypeAction defaultAction = FileTypeAction.ViewHex, bool xmlConvertible = false)
         {
