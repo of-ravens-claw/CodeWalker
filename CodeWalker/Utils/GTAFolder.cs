@@ -15,8 +15,14 @@ namespace CodeWalker
     public static class GTAFolder
     {
         public static string CurrentGTAFolder { get; private set; } = Settings.Default.GTAFolder;
+        public static bool IsGen9 { get; private set; } = Settings.Default.GTAGen9;
 
-        public static bool ValidateGTAFolder(string folder, out string failReason)
+        public static bool IsGen9Folder(string folder)
+        {
+            return File.Exists(folder + @"\gta5_enhanced.exe");
+        }
+
+        public static bool ValidateGTAFolder(string folder, bool gen9, out string failReason)
         {
             if (string.IsNullOrWhiteSpace(folder))
             {
@@ -34,25 +40,31 @@ namespace CodeWalker
 	        return true;
         }
 
-        public static bool ValidateGTAFolder(string folder) => ValidateGTAFolder(folder, out string reason);
+        public static bool ValidateGTAFolder(string folder, bool gen9) => ValidateGTAFolder(folder, gen9, out string reason);
 
-        public static bool IsCurrentGTAFolderValid() => ValidateGTAFolder(CurrentGTAFolder);
+        public static bool IsCurrentGTAFolderValid() => ValidateGTAFolder(CurrentGTAFolder, IsGen9);
 
-        public static bool UpdateGTAFolder(bool UseCurrentIfValid = false)
+        public static bool UpdateGTAFolder(bool useCurrentIfValid = false, bool autoDetect = true)
         {
-            if(UseCurrentIfValid && IsCurrentGTAFolderValid())
+            if (useCurrentIfValid && IsCurrentGTAFolderValid())
             {
                 return true;
             }
 
+            var gen9 = IsGen9;
             string origFolder = CurrentGTAFolder;
             string folder = CurrentGTAFolder;
             SelectFolderForm f = new SelectFolderForm();
 
             f.ShowDialog();
-            if(f.Result == DialogResult.OK && Directory.Exists(f.SelectedFolder))
+            if (f.Result == DialogResult.Cancel)
+            {
+                return false;
+            }
+            if (f.Result == DialogResult.OK && Directory.Exists(f.SelectedFolder))
             {
                 folder = f.SelectedFolder;
+                gen9 = f.IsGen9;
             }
 
             if (ValidateGTAFolder(folder, out var failReason))
@@ -74,12 +86,14 @@ namespace CodeWalker
             return false;
         }
 
-        public static bool SetGTAFolder(string folder)
+        public static bool SetGTAFolder(string folder, bool gen9)
         {
-            if(ValidateGTAFolder(folder))
+            if(ValidateGTAFolder(folder, gen9))
             {
                 CurrentGTAFolder = folder;
+                IsGen9 = gen9;
                 Settings.Default.GTAFolder = folder;
+                Settings.Default.GTAGen9 = gen9;
                 Settings.Default.Save();
                 return true;
             }

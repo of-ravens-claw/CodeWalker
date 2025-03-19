@@ -4361,7 +4361,7 @@ namespace CodeWalker
 
             try
             {
-                GTA5Keys.LoadFromPath(GTAFolder.CurrentGTAFolder, Settings.Default.Key);
+                GTA5Keys.LoadFromPath(GTAFolder.CurrentGTAFolder, GTAFolder.IsGen9, Settings.Default.Key);
 
                 //save the key for later if it's not saved already. not really ideal to have this in this thread
                 if (string.IsNullOrEmpty(Settings.Default.Key) && (GTA5Keys.PC_AES_KEY != null))
@@ -7018,6 +7018,15 @@ namespace CodeWalker
         private void ToolsButton_Click(object sender, EventArgs e)
         {
             ToolsMenu.Show(ToolsButton, 0, ToolsButton.Height);
+        }
+
+        private void ToolsMenuConfigureGame_Click(object sender, EventArgs e)
+        {
+            var result = GTAFolder.UpdateGTAFolder(false, false);
+            if (result)
+            {
+                MessageBox.Show("Please restart CodeWalker to use the new folder.");
+            }
         }
 
         private void ToolsMenuRPFBrowser_Click(object sender, EventArgs e)

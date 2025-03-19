@@ -1484,7 +1484,7 @@ namespace CodeWalker.GameFiles
 
             string fpath = gtafolder;
             fpath = fpath.EndsWith("\\") ? fpath : fpath + "\\";
-            fpath = fpath + relpath;
+            fpath = relpath.Contains(":") ? relpath : fpath + relpath;
 
             if (File.Exists(fpath))
             {

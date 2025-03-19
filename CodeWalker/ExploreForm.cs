@@ -195,7 +195,7 @@ namespace CodeWalker
                 /*
                 try
                 {
-                    GTA5Keys.LoadFromPath(GTAFolder.CurrentGTAFolder, Settings.Default.Key);
+                    GTA5Keys.LoadFromPath(GTAFolder.CurrentGTAFolder, GTAFolder.IsGen9, Settings.Default.Key);
                 }
                 catch
                 {
@@ -476,7 +476,19 @@ namespace CodeWalker
             }
         }
 
-        
+
+
+        public void ConfigureGame()
+        {
+            var result = GTAFolder.UpdateGTAFolder(false, false);
+            if (result)
+            {
+                MessageBox.Show("Please restart CodeWalker to use the new folder.");
+            }
+        }
+
+
+
 
         public void UpdateStatus(string text)
         {
@@ -4120,6 +4132,11 @@ namespace CodeWalker
             SelectAll();
         }
 
+        private void FileConfigureGameMenu_Click(object sender, EventArgs e)
+        {
+            ConfigureGame();
+        }
+
         private void FileOpenFolderMenu_Click(object sender, EventArgs e)
         {
             OpenFolder();
@@ -4272,6 +4289,12 @@ namespace CodeWalker
         private void ToolsJenkIndMenu_Click(object sender, EventArgs e)
         {
             JenkIndForm f = new JenkIndForm(GetFileCache());
+            f.Show(this);
+        }
+
+        private void ToolsAssetConverterMenu_Click(object sender, EventArgs e)
+        {
+            ConvertAssetsForm f = new ConvertAssetsForm();
             f.Show(this);
         }
 

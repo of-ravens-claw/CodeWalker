@@ -9932,6 +9932,7 @@ namespace CodeWalker.GameFiles
         lightType = 482065968,
         groupId = 2501631252,
         cullingPlane = 1689591312,
+        padding0 = 1941482115,
         padding1 = 3180641850,
         padding2 = 2346113727,
         padding3 = 3521603295,
@@ -20649,5 +20650,9 @@ namespace CodeWalker.GameFiles
         MinVehVelMagForBicycleSideSwipeCNC = 4160452608,
         bUseAmmoCaching = 1408872353,
         CrimeInfosArcadeCNC = 2698893089,
+
+
+
+
     }
 }

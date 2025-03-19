@@ -32,8 +32,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExploreForm));
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.FileMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.FileOpenFolderMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.FileConfigureGameMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.FileOpenFolderMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             this.FileExitMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.EditMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.EditViewMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,6 +75,7 @@
             this.ToolsRpfBrowserMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsJenkGenMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsJenkIndMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsAssetConverterMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsStartInEditModeMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsStartInFolderMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -190,30 +193,44 @@
             // FileMenu
             // 
             this.FileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FileOpenFolderMenu,
+            this.FileConfigureGameMenu,
             this.toolStripSeparator7,
+            this.FileOpenFolderMenu,
+            this.toolStripSeparator14,
             this.FileExitMenu});
             this.FileMenu.Name = "FileMenu";
             this.FileMenu.Size = new System.Drawing.Size(37, 20);
             this.FileMenu.Text = "File";
             // 
-            // FileOpenFolderMenu
+            // FileConfigureGameMenu
             // 
-            this.FileOpenFolderMenu.Name = "FileOpenFolderMenu";
-            this.FileOpenFolderMenu.Size = new System.Drawing.Size(148, 22);
-            this.FileOpenFolderMenu.Text = "Open Folder...";
-            this.FileOpenFolderMenu.Click += new System.EventHandler(this.FileOpenFolderMenu_Click);
+            this.FileConfigureGameMenu.Name = "FileConfigureGameMenu";
+            this.FileConfigureGameMenu.Size = new System.Drawing.Size(170, 22);
+            this.FileConfigureGameMenu.Text = "Configure Game...";
+            this.FileConfigureGameMenu.Click += new System.EventHandler(this.FileConfigureGameMenu_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(167, 6);
+            // 
+            // FileOpenFolderMenu
+            // 
+            this.FileOpenFolderMenu.Name = "FileOpenFolderMenu";
+            this.FileOpenFolderMenu.Size = new System.Drawing.Size(170, 22);
+            this.FileOpenFolderMenu.Text = "Open Folder...";
+            this.FileOpenFolderMenu.Click += new System.EventHandler(this.FileOpenFolderMenu_Click);
+            // 
+            // toolStripSeparator14
+            // 
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(167, 6);
             // 
             // FileExitMenu
             // 
             this.FileExitMenu.Name = "FileExitMenu";
             this.FileExitMenu.ShortcutKeyDisplayString = "Alt+F4";
-            this.FileExitMenu.Size = new System.Drawing.Size(148, 22);
+            this.FileExitMenu.Size = new System.Drawing.Size(170, 22);
             this.FileExitMenu.Text = "Exit";
             this.FileExitMenu.Click += new System.EventHandler(this.FileExitMenu_Click);
             // 
@@ -498,7 +515,8 @@
             this.ToolsAudioExplorerMenu,
             this.ToolsRpfBrowserMenu,
             this.ToolsJenkGenMenu,
-            this.ToolsJenkIndMenu});
+            this.ToolsJenkIndMenu,
+            this.ToolsAssetConverterMenu});
             this.ToolsMenu.Name = "ToolsMenu";
             this.ToolsMenu.Size = new System.Drawing.Size(46, 20);
             this.ToolsMenu.Text = "Tools";
@@ -537,6 +555,13 @@
             this.ToolsJenkIndMenu.Size = new System.Drawing.Size(180, 22);
             this.ToolsJenkIndMenu.Text = "JenkInd";
             this.ToolsJenkIndMenu.Click += new System.EventHandler(this.ToolsJenkIndMenu_Click);
+            // 
+            // ToolsAssetConverterMenu
+            // 
+            this.ToolsAssetConverterMenu.Name = "ToolsAssetConverterMenu";
+            this.ToolsAssetConverterMenu.Size = new System.Drawing.Size(180, 22);
+            this.ToolsAssetConverterMenu.Text = "Asset Converter";
+            this.ToolsAssetConverterMenu.Click += new System.EventHandler(this.ToolsAssetConverterMenu_Click);
             // 
             // OptionsMenu
             // 
@@ -1476,5 +1501,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
         private System.Windows.Forms.ToolStripMenuItem ListContextNewYtdFileMenu;
         private System.Windows.Forms.ToolStripMenuItem ToolsAudioExplorerMenu;
+        private System.Windows.Forms.ToolStripMenuItem FileConfigureGameMenu;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
+        private System.Windows.Forms.ToolStripMenuItem ToolsAssetConverterMenu;
     }
 }

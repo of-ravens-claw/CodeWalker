@@ -1199,7 +1199,7 @@ namespace CodeWalker.GameFiles
 			// obviously add such checks again in higher-level code.
 			return key;
 		}
-}
+	}
 
 	[Obsolete("GTA5Keys will be fully replaced with a better (no stupid key hashes) system soon!")]
 	public static class GTA5Keys
