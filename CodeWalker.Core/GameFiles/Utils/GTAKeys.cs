@@ -1232,7 +1232,7 @@ namespace CodeWalker.GameFiles
 
         }
 
-        public static void LoadFromPath(string path = ".\\Keys", string key = null)
+        public static void LoadFromPath(string path = ".\\Keys", bool gen9 = false, string key = null)
         {
 	        SetKeys();
         }

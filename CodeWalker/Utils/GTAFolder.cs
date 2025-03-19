@@ -67,9 +67,9 @@ namespace CodeWalker
                 gen9 = f.IsGen9;
             }
 
-            if (ValidateGTAFolder(folder, out var failReason))
+            if (ValidateGTAFolder(folder, gen9, out var failReason))
             {
-                SetGTAFolder(folder);
+                SetGTAFolder(folder, gen9);
                 if (folder != origFolder)
                 {
                     MessageBox.Show($"Successfully changed GTA Folder to \"{folder}\"", "Set GTA Folder", MessageBoxButtons.OK, MessageBoxIcon.Information);
