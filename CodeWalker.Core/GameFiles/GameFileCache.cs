@@ -1247,15 +1247,15 @@ namespace CodeWalker.GameFiles
             CacheDatFile maincache = null;
             if (EnableDlc)
             {
-                maincache = loadCacheFile("update\\update.rpf\\common\\data\\gta5_cache_y.dat", false);
+                maincache = loadCacheFile("update\\update.rpf\\common\\data\\gta5_cache_o.dat", false);
                 if (maincache == null)
                 {
-                    maincache = loadCacheFile("update\\update2.rpf\\common\\data\\gta5_cache_y.dat", true);
+                    maincache = loadCacheFile("update\\update2.rpf\\common\\data\\gta5_cache_o.dat", true);
                 }
             }
             else
             {
-                maincache = loadCacheFile("common.rpf\\data\\gta5_cache_y.dat", true);
+                maincache = loadCacheFile("common.rpf\\data\\gta5_cache_o.dat", true);
             }
 
 
@@ -3792,8 +3792,6 @@ namespace CodeWalker.GameFiles
                                     {
                                         if (tex.Data?.FullData?.Length != tex2.Data?.FullData?.Length)
                                         { }
-                                        if (tex.Stride != tex2.Stride)
-                                        { }
                                     }
                                     if ((tex.Format != tex2.Format) || (tex.Width != tex2.Width) || (tex.Height != tex2.Height) || (tex.Depth != tex2.Depth) || (tex.Levels != tex2.Levels))
                                     { }
@@ -5157,7 +5155,7 @@ namespace CodeWalker.GameFiles
                 {
                     try
                     {
-                        if (entry.NameLower.EndsWith("cache_y.dat"))// || entry.NameLower.EndsWith("cache_y_bank.dat"))
+                        if (entry.NameLower.EndsWith("cache_o.dat"))// || entry.NameLower.EndsWith("cache_o_bank.dat"))
                         {
                             UpdateStatus(entry.Path);
                             var cdfile = RpfMan.GetFile<CacheDatFile>(entry);

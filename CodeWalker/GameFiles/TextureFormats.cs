@@ -11,55 +11,6 @@ namespace CodeWalker.GameFiles
 
     public static class TextureFormats
     {
-        public static Format GetDXGIFormat(TextureFormat fmt)
-        {
-            Format format = Format.Unknown;
-            switch (fmt)
-            {
-                // compressed
-                case TextureFormat.D3DFMT_DXT1: format = Format.BC1_UNorm; break;
-                case TextureFormat.D3DFMT_DXT3: format = Format.BC2_UNorm; break;
-                case TextureFormat.D3DFMT_DXT5: format = Format.BC3_UNorm; break;
-                case TextureFormat.D3DFMT_ATI1: format = Format.BC4_UNorm; break;
-                case TextureFormat.D3DFMT_ATI2: format = Format.BC5_UNorm; break;
-                case TextureFormat.D3DFMT_BC7: format = Format.BC7_UNorm; break;
-
-                // uncompressed
-                case TextureFormat.D3DFMT_A1R5G5B5: format = Format.B5G5R5A1_UNorm; break;
-                case TextureFormat.D3DFMT_A8: format = Format.A8_UNorm; break;
-                case TextureFormat.D3DFMT_A8B8G8R8: format = Format.R8G8B8A8_UNorm; break;
-                case TextureFormat.D3DFMT_L8: format = Format.R8_UNorm; break;
-                case TextureFormat.D3DFMT_A8R8G8B8: format = Format.B8G8R8A8_UNorm; break;
-                case TextureFormat.D3DFMT_X8R8G8B8: format = Format.B8G8R8X8_UNorm; break;
-            }
-            return format;
-        }
-
-        public static int ByteSize(TextureFormat fmt)
-        {
-            switch (fmt)
-            {
-                // compressed
-                case TextureFormat.D3DFMT_DXT1: return 4;// BC1_UNorm
-                case TextureFormat.D3DFMT_DXT3: return 8;// BC2_UNorm
-                case TextureFormat.D3DFMT_DXT5: return 8;// BC3_UNorm
-                case TextureFormat.D3DFMT_ATI1: return 4;// BC4_UNorm
-                case TextureFormat.D3DFMT_ATI2: return 8;// BC5_UNorm
-                case TextureFormat.D3DFMT_BC7: return 8;// BC7_UNorm
-
-                // uncompressed
-                case TextureFormat.D3DFMT_A1R5G5B5: return 16;// B5G5R5A1_UNorm
-                case TextureFormat.D3DFMT_A8: return 8;// A8_UNorm
-                case TextureFormat.D3DFMT_A8B8G8R8: return 32;// R8G8B8A8_UNorm
-                case TextureFormat.D3DFMT_L8: return 8;// R8_UNorm
-                case TextureFormat.D3DFMT_A8R8G8B8: return 32;// B8G8R8A8_UNorm
-                case TextureFormat.D3DFMT_X8R8G8B8: return 32;// B8G8R8X8_UNorm
-
-                default: return 0;
-            }
-        }
-
-
         public static void ComputePitch(Format fmt, int width, int height, out int rowPitch, out int slicePitch, uint flags)
         {
             int nbw, nbh;

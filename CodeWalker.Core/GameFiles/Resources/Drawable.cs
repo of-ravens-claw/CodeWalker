@@ -396,120 +396,7 @@ namespace CodeWalker.GameFiles
 
         public void EnsureGen9()
         {
-            if (ParametersList == null) return;//need this
-            //get G9_ParamInfos from GameFileCache.ShadersGen9ConversionData
-            //calculate ParametersList.G9_DataSize
-            //build ParametersList.G9_ fields from G9_ParamInfos
-
-
-            GameFileCache.EnsureShadersGen9ConversionData();
-            GameFileCache.ShadersGen9ConversionData.TryGetValue(Name, out var dc);
-
-            var bsizs = dc?.BufferSizes;
-            var pinfs = dc?.ParamInfos;
-            var tc = 0;
-            var uc = 0;
-            var sc = 0;
-            var bs = 0;
-            var multi = 1;
-            var bsizsu = new uint[bsizs?.Length ?? 0];
-            if (bsizs != null)
-            {
-                multi = 3;
-                for (int i = 0; i < bsizs.Length; i++)
-                {
-                    var bsiz = bsizs[i];
-                    bsizsu[i] = (uint)bsiz;
-                    bs += bsiz;
-                }
-            }
-            if (pinfs != null)
-            {
-                multi = multi << 2;
-                foreach (var pinf in pinfs)
-                {
-                    switch (pinf.Type)
-                    {
-                        case ShaderParamTypeG9.Texture: tc++; break;
-                        case ShaderParamTypeG9.Unknown: uc++; break;
-                        case ShaderParamTypeG9.Sampler: sc++; break;
-                    }
-                }
-            }
-            var pinfos = new ShaderParamInfosG9();
-            pinfos.Params = pinfs;
-            pinfos.NumBuffers = (byte)(bsizs?.Length ?? 0);
-            pinfos.NumParams = (byte)(pinfs?.Length ?? 0);
-            pinfos.NumTextures = (byte)tc;
-            pinfos.NumUnknowns = (byte)uc;
-            pinfos.NumSamplers = (byte)sc;
-            pinfos.Unknown0 = (byte)0x00;
-            pinfos.Unknown1 = (byte)0x01;
-            pinfos.Unknown2 = (byte)multi;
-
-
-            var ptrslen = pinfos.NumBuffers * 8 * multi;
-            var bufslen = (int)(bs) * multi;
-            var texslen = tc * 8 * multi;
-            var unkslen = uc * 8 * multi;
-            var smpslen = sc;
-            var totlen = ptrslen + bufslen + texslen + unkslen + smpslen;
-            ParametersList.G9_BuffersDataSize = (uint)bufslen;
-            ParametersList.G9_TexturesOffset = (uint)(ptrslen + bufslen);
-            ParametersList.G9_UnknownsOffset = (uint)(ptrslen + bufslen + texslen);
-            ParametersList.G9_DataSize = totlen;
-            ParameterDataSize = (ushort)totlen;
-
-
-
-            if (G9_ParamInfos != null)
-            { }
-            G9_ParamInfos = pinfos;
-            ParametersList.G9_ParamInfos = pinfos;
-
-            if (ParametersList.G9_Samplers != null)
-            { }
-            ParametersList.G9_Samplers = dc?.SamplerValues;
-
-            if (ParametersList.G9_BufferSizes != null)
-            { }
-            ParametersList.G9_BufferSizes = bsizsu;
-
-
-            var parr = ParametersList.Parameters;
-            if (parr != null)
-            {
-                foreach (var p in parr)
-                {
-                    if (p.Data is Texture etex)//in case embedded textures are actual texture refs, convert them to TextureBase
-                    {
-                        var btex = new TextureBase();
-                        btex.Name = etex.Name;
-                        btex.NameHash = etex.NameHash;
-                        btex.G9_Dimension = etex.G9_Dimension;
-                        btex.G9_Flags = 0x00260000;
-                        //btex.G9_SRV = new ShaderResourceViewG9();
-                        //btex.G9_SRV.Dimension = etex.G9_SRV?.Dimension ?? ShaderResourceViewDimensionG9.Texture2D;
-                        p.Data = btex;
-                    }
-                    else if (p.Data is TextureBase btex)
-                    {
-                        if (btex.G9_Flags == 0) btex.G9_Flags = 0x00260000;
-                        //if (btex.G9_SRV == null)//make sure the SRVs for these params exist
-                        //{
-                        //    btex.G9_SRV = new ShaderResourceViewG9();
-                        //    switch (btex.G9_Dimension)
-                        //    {
-                        //        case TextureDimensionG9.Texture2D: btex.G9_SRV.Dimension = ShaderResourceViewDimensionG9.Texture2D; break;
-                        //        case TextureDimensionG9.Texture3D: btex.G9_SRV.Dimension = ShaderResourceViewDimensionG9.Texture3D; break;
-                        //        case TextureDimensionG9.TextureCube: btex.G9_SRV.Dimension = ShaderResourceViewDimensionG9.TextureCube; break;
-                        //    }
-                        //}
-                    }
-                }
-            }
-
-
+            // do nothing. we don't support gen9.
         }
 
 
@@ -722,11 +609,13 @@ namespace CodeWalker.GameFiles
                         p.Data = reader.ReadBlockAt<TextureBase>(p.DataPointer);
                         paras.Add(p);
                         hashes.Add((MetaName)hash);
+                        /*
                         if (p.Data is TextureBase ptex)
                         {
                             if (ptex.G9_SRV != null)
                             { }
                         }
+                        */
                     }
                     else if (info.Type == ShaderParamTypeG9.CBuffer)
                     {

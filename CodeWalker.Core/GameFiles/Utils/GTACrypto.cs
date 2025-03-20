@@ -77,7 +77,7 @@ namespace CodeWalker.GameFiles
 	        transformitSelector += size; // archive size
 	        transformitSelector %= TFIT_NUM_KEYS;
 
-            return RageMultiKeys.unique_multikey_gta5_ps4[transformitSelector];
+            return GTA5Keys.AES_MULTI_KEY[transformitSelector];
         }
 
         // PC uses different code for TFIT keys.

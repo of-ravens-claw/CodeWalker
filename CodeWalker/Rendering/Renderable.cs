@@ -1264,13 +1264,13 @@ namespace CodeWalker.Rendering
                 using (var stream = DataStream.Create(Key.Data.FullData, true, false))
                 {
 
-                    var format = TextureFormats.GetDXGIFormat(Key.Format);
+                    // todo: casting is dumb
+                    var format = (SharpDX.DXGI.Format)(Key.Format);
                     var width = Key.Width;
                     var height = Key.Height;
                     int mips = Key.Levels;
                     int rowpitch, slicepitch;
                     var totlength = Key.Data.FullData.Length;
-                    int pxsize = TextureFormats.ByteSize(Key.Format); // SharpDX.DXGI.FormatHelper.SizeOfInBytes(desc.Format);
 
                     //get databoxes for mips
                     int offset = 0;

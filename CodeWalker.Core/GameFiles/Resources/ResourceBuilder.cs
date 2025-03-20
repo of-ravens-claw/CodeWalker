@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -552,7 +553,6 @@ namespace CodeWalker.GameFiles
             var systemStream = new MemoryStream();
             var graphicsStream = new MemoryStream();
             var resourceWriter = new ResourceDataWriter(systemStream, graphicsStream);
-            resourceWriter.IsGen9 = gen9;
 
             resourceWriter.Position = 0x50000000;
             foreach (var block in systemBlocks)

@@ -1084,7 +1084,6 @@ namespace CodeWalker.GameFiles
 	        }
         };
 	}
-
 	public static class RageStringHash
 	{
 		public static byte[] g_NormalizeCaseAndSlash = new byte[256]
@@ -1199,12 +1198,15 @@ namespace CodeWalker.GameFiles
         public static byte[] AES_KEY; // unique_key_gta_*, see aes.cpp
         public static uint[] AWC_KEY; // located in audWaveSlot::GetKey
 
+        public static byte[][] AES_MULTI_KEY;
+
         public static uint AWC_TEA_STIRRER = 0xa9d27bd3; // Different between PC, PS4, and XB1. Unsure about Gen7 or Gen9.
 
         public static void SetKeys() // These are for Orbis specifically.
         {
 			// Depends on the platform
 	        AES_KEY = RageAesKeys.unique_key_gta5_ps4;
+            AES_MULTI_KEY = RageMultiKeys.unique_multikey_gta5_ps4;
 
             AWC_TEA_STIRRER = 0xa9d27bd3;
 			AWC_KEY = new uint[4] { AWC_TEA_STIRRER ^ 0xF34B1262, AWC_TEA_STIRRER ^ 0xCFB0FE66, AWC_TEA_STIRRER ^ 0xEC500648, AWC_TEA_STIRRER ^ 0xB90ACE74 };

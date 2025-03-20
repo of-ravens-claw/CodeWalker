@@ -98,6 +98,7 @@
 using CodeWalker.GameFiles;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -113,7 +114,7 @@ namespace CodeWalker.Utils
         public static byte[] GetPixels(Texture texture, int mip)
         {
             //dexyfex version
-            var format = GetDXGIFormat(texture.Format);
+            var format = (DXGI_FORMAT)texture.Format;
             ImageStruct img = GetImageStruct(texture, format);
             Image[] images = GetMipmapImages(img, format);
             TexMetadata meta = GetImageMetadata(img, format);
@@ -213,7 +214,7 @@ namespace CodeWalker.Utils
 
         public static byte[] GetDDSFile(Texture texture)
         {
-            var format = GetDXGIFormat(texture.Format);
+            var format = (DXGI_FORMAT)texture.Format;
             ImageStruct img = GetImageStruct(texture, format);
             Image[] images = GetMipmapImages(img, format);
             TexMetadata meta = GetImageMetadata(img, format);
@@ -451,9 +452,7 @@ namespace CodeWalker.Utils
             if (isCubeMap)
             { }
 
-            DXTex.ComputePitch(format, (int)width, (int)height, out int rowPitch, out int slicePitch, 0);
-            var stride = slicePitch / height;
-            var scanlines = DXTex.ComputeScanlines(format, (int)height);
+            //DXTex.ComputePitch(format, (int)width, (int)height, out int rowPitch, out int slicePitch, 0);
 
             var brem = ms.Length - ms.Position;
             var ddsdata = br.ReadBytes((int)brem);
@@ -463,10 +462,25 @@ namespace CodeWalker.Utils
             tex.Height = (ushort)height;
             tex.Depth = (ushort)depth;
             tex.Levels = (byte)mipCount;
-            tex.Format = GetTextureFormat(format);
-            tex.Stride = (ushort)stride;
+            tex.Format = (TextureFormatOrbis)format;
             tex.Data = new TextureData();
             tex.Data.FullData = ddsdata;
+            tex.DataSize = (ulong)brem;
+
+            // TODO: We should NOT do this!
+            // This is EXTREMELY inefficient! And unsupported by Sony!!
+            tex.TileMode = GrcTileMode.Display_LinearGeneral;
+
+            // TODO: PLEASE FIX
+#if tiling_support_has_been_added
+            // RageBuilder only outputs the following two modes:
+            // PS4 code should support all of them, but for simplicity
+            // we don't bother with them. (even if they might be more efficient...)
+            if (depth > 1)
+                tex.TileMode = GrcTileMode.Thin_1dThin;
+            else 
+                tex.TileMode = GrcTileMode.Display_LinearAligned;
+#endif
 
             //tex.Unknown_43h = (byte)header.ddspf.dwSize;
 
@@ -475,7 +489,8 @@ namespace CodeWalker.Utils
 
 
 
-
+        // NOTE: These two were kept around so we can export to XML
+        // and import on PC CodeWalker, this is hacky, but alas.
         public static TextureFormat GetTextureFormat(DXGI_FORMAT f)
         {
             var format = (TextureFormat)0;
@@ -496,10 +511,12 @@ namespace CodeWalker.Utils
                 case DXGI_FORMAT.DXGI_FORMAT_R8_UNORM: format = TextureFormat.D3DFMT_L8; break;
                 case DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM: format = TextureFormat.D3DFMT_A8R8G8B8; break;
                 case DXGI_FORMAT.DXGI_FORMAT_B8G8R8X8_UNORM: format = TextureFormat.D3DFMT_X8R8G8B8; break;
+
+                // not yet categorized
+                case DXGI_FORMAT.DXGI_FORMAT_B5G6R5_UNORM: format = TextureFormat.D3DFMT_R5G6B5; break;
             }
             return format;
         }
-
         public static DXGI_FORMAT GetDXGIFormat(TextureFormat f)
         {
             var format = DXGI_FORMAT.DXGI_FORMAT_UNKNOWN;
@@ -520,9 +537,14 @@ namespace CodeWalker.Utils
                 case TextureFormat.D3DFMT_L8: format = DXGI_FORMAT.DXGI_FORMAT_R8_UNORM; break;
                 case TextureFormat.D3DFMT_A8R8G8B8: format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM; break;
                 case TextureFormat.D3DFMT_X8R8G8B8: format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8X8_UNORM; break;
+
+                // not yet categorized
+                case TextureFormat.D3DFMT_R5G6B5: format = DXGI_FORMAT.DXGI_FORMAT_B5G6R5_UNORM; break;
             }
             return format;
         }
+
+
 
         private static ImageStruct GetImageStruct(Texture texture, DXGI_FORMAT format)
         {
@@ -2800,5 +2822,126 @@ namespace CodeWalker.Utils
             return px;
         }
 
+        // PS4 tiling/swizzling functions
+        public static class PS4Swizzle
+        {
+            internal static int[] bpp = new int[116]
+            {
+                0, 128, 128, 128, 128, 96, 96, 96, 96, 64,
+                64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
+                64, 64, 64, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+                32, 32, 32, 32, 32, 32, 32, 32, 16, 16,
+                16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+                8, 8, 8, 8, 8, 8, 1, 32, 32, 32,
+                4, 4, 4, 8, 8, 8, 8, 8, 8, 4,
+                4, 4, 8, 8, 8, 16, 16, 32, 32, 32,
+                32, 32, 32, 32, 8, 8, 8, 8, 8, 8,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 16
+            };
+
+            internal static int mx;
+            internal static int my;
+            internal static void map_block_position(int x, int y, int w, int bx)
+            {
+                int num = bx / 2;
+                int num2 = x / bx;
+                int num3 = y / num;
+                int num4 = x % bx;
+                int num5 = y % num;
+                int num6 = w / bx;
+                int num7 = 2 * num6;
+                int num8 = num2 + num3 * num6;
+                int num9 = num8 % num7;
+                int num10 = num9 / 2 + num9 % 2 * num6;
+                int num11 = num8 / num7 * num7 + num10;
+                int num12 = num11 % num6;
+                int num13 = num11 / num6;
+                mx = num12 * bx + num4;
+                my = num13 * num + num5;
+            }
+
+            public static bool IsSupportedFormat(DXGI_FORMAT format)
+            {
+                switch (format)
+                {
+                    case DXGI_FORMAT.DXGI_FORMAT_BC1_UNORM:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC2_UNORM:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC3_UNORM:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC4_UNORM:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC5_UNORM:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC5_SNORM:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC6H_UF16:
+                    case DXGI_FORMAT.DXGI_FORMAT_BC7_UNORM:
+                        return true;
+
+                    default: 
+                        return false;
+                }
+            }
+
+            /// <summary>
+            /// Converts an image from the tiled PS4 format to the untiled PC format
+            /// </summary>
+            /// <param name="tiledImage"></param>
+            /// <param name="width"></param>
+            /// <param name="height"></param>
+            /// <param name="format"></param>
+            /// <returns></returns>
+            public static byte[] Unswizzle(byte[] tiledImage, int width, int height, int format)
+            {
+                // reset them (probably not needed)
+                mx = 0;
+                my = 0;
+                MemoryStream rawStream = new MemoryStream(tiledImage);
+                int num10 = bpp[format] * 2;
+                int pitchOrLinearSize = width * height * bpp[format] / 8;
+
+                // TODO: fix this, for now we just abort
+                if (num10 > 16)
+                {
+                    Debugger.Break();
+                    rawStream.Close();
+                    return tiledImage;
+                }
+
+                byte[] array = new byte[pitchOrLinearSize];
+                byte[] array2 = new byte[16];
+                int num12 = height / 4;
+                int num13 = width / 4;
+                for (int i = 0; i < num12; i++)
+                {
+                    for (int j = 0; j < num13; j++)
+                    {
+                        mx = j;
+                        my = i;
+                        map_block_position(j, i, num13, 2);
+                        map_block_position(mx, my, num13, 4);
+                        map_block_position(mx, my, num13, 8);
+                        rawStream.Read(array2, 0, num10);
+                        int destinationIndex = num10 * (my * num13 + mx);
+                        Array.Copy(array2, 0, array, destinationIndex, num10);
+                    }
+                }
+                rawStream.Close();
+
+                return array;
+            }
+
+            /// <summary>
+            /// Converts an image from the untiled PC format to the tiled PS4 format
+            /// </summary>
+            /// <param name="untiledImage"></param>
+            /// <param name="width"></param>
+            /// <param name="height"></param>
+            /// <param name="format"></param>
+            /// <returns></returns>
+            /// <exception cref="NotImplementedException"></exception>
+            public static byte[] Swizzle(byte[] untiledImage, int width, int height, int format)
+            {
+                throw new NotImplementedException("can't swizzle images yet!");
+            }
+        }
     }
 }
