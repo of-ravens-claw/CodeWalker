@@ -11,11 +11,11 @@ namespace CodeWalker.GameFiles
     {
         public static byte[] DecryptAES(byte[] data)
         {
-            return DecryptAESData(data, GTA5Keys.PC_AES_KEY);
+            return DecryptAESData(data, GTA5Keys.AES_KEY);
         }
         public static byte[] EncryptAES(byte[] data)
         {
-            return EncryptAESData(data, GTA5Keys.PC_AES_KEY);
+            return EncryptAESData(data, GTA5Keys.AES_KEY);
         }
         public static byte[] DecryptAESData(byte[] data, byte[] key, int rounds = 1)
         {

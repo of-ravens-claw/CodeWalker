@@ -43,10 +43,9 @@ namespace CodeWalker.GameFiles
         public static void Decrypt_RSXXTEA(byte[] data)
         {
             const uint DELTA = 0x9e3779b9;
-            const uint TEA_STIRRER = 0xa9d27bd3; // Also modify this in GTAKeys.cs
 
             // Rockstar's modified version of XXTEA
-            var key = GTA5Keys.PC_AWC_KEY;
+            var key = GTA5Keys.AWC_KEY;
             uint[] blocks = new uint[data.Length / 4];
             Buffer.BlockCopy(data, 0, blocks, 0, data.Length);
 
@@ -59,7 +58,7 @@ namespace CodeWalker.GameFiles
                 for (int block_index = block_count - 1; block_index >= 0; --block_index)
                 {
                     a = blocks[(block_index > 0 ? block_index : block_count) - 1];
-                    b = blocks[block_index] -= (a >> 5 ^ b << 2) + (b >> 3 ^ a << 4) ^ (i ^ b) + (key[block_index & 3 ^ (i >> 2 & 3)] ^ a ^ TEA_STIRRER);
+                    b = blocks[block_index] -= (a >> 5 ^ b << 2) + (b >> 3 ^ a << 4) ^ (i ^ b) + (key[block_index & 3 ^ (i >> 2 & 3)] ^ a ^ GTA5Keys.AWC_TEA_STIRRER);
                 }
                 i -= DELTA;
             } while (i != 0);
@@ -69,15 +68,17 @@ namespace CodeWalker.GameFiles
 
         public static void Encrypt_RSXXTEA(byte[] data)
         {
-            //https://en.wikipedia.org/wiki/XXTEA#Reference_code
-            //original is
-            //#define MX ((z>>5^y<<2) + (y>>3^z<<4) ^ (sum^y) + (k[p&3^e]^z))
-            //R * is
-            //#define MX ((z>>5^y<<2) + (y>>3^z<<4) ^ (sum^y) + (k[p&3^e]^z ^ 0x7B3A207F))
-            //(thanks alex)
-            //TODO: update the Decrypt method to use the "clarified" version without undefined behaviour?
+            const uint DELTA = 0x9e3779b9;
 
-            var key = GTA5Keys.PC_AWC_KEY;
+            // https://en.wikipedia.org/wiki/XXTEA#Reference_code
+            // original is
+            // #define MX ((z>>5^y<<2) + (y>>3^z<<4) ^ (sum^y) + (k[p&3^e]^z))
+            // R* is
+            // #define MX ((z>>5^y<<2) + (y>>3^z<<4) ^ (sum^y) + (k[p&3^e]^z ^ TEA_STIRRER))
+            // (thanks alex)
+            // TODO: update the Decrypt method to use the "clarified" version without undefined behaviour?
+
+            var key = GTA5Keys.AWC_KEY;
             uint[] blocks = new uint[data.Length / 4];
             Buffer.BlockCopy(data, 0, blocks, 0, data.Length);
 
@@ -87,12 +88,12 @@ namespace CodeWalker.GameFiles
             uint y, z = blocks[n - 1];
             do
             {
-                sum += 0x9E3779B9;
+                sum += DELTA;
                 uint e = (sum >> 2) & 3;
                 for (int p = 0; p < n; p++)
                 {
                     y = blocks[(p + 1) % n];
-                    z = blocks[p] += (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (key[p & 3 ^ e] ^ z ^ 0x7B3A207F);
+                    z = blocks[p] += (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (key[p & 3 ^ e] ^ z ^ GTA5Keys.AWC_TEA_STIRRER);
                 }
             } while ((--rounds) != 0);
 

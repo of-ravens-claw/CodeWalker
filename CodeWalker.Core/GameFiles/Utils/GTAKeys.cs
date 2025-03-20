@@ -1,12 +1,5 @@
-﻿using CodeWalker.Core.Properties;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CodeWalker.GameFiles
 {
@@ -1201,108 +1194,25 @@ namespace CodeWalker.GameFiles
 		}
 	}
 
-	[Obsolete("GTA5Keys will be fully replaced with a better (no stupid key hashes) system soon!")]
 	public static class GTA5Keys
     {
-        // TODO: Fully deprecate this class. (I wish, just get rid of CodeWalker...)
-        public static byte[] PC_AES_KEY; // unique_key_gta_pc
-        public static byte[][] PC_NG_KEYS; // stored in some stupid format, just look in aes.h/cpp, you'll know when you've found it
-        public static byte[] PC_LUT; // g_NormalizeCaseAndSlash
-        public static uint[] PC_AWC_KEY; // located in audWaveSlot::GetKey
+        public static byte[] AES_KEY; // unique_key_gta_*, see aes.cpp
+        public static uint[] AWC_KEY; // located in audWaveSlot::GetKey
 
-		// TO SOLVE:
-	    public static uint[][][] PC_NG_DECRYPT_TABLES; // Looks to be a special TFIT library thing?
-        
-		// These two are likely not needed for *now*!
-	    public static uint[][][] PC_NG_ENCRYPT_TABLES;
-        public static GTA5NGLUT[][] PC_NG_ENCRYPT_LUTs;
-        
+        public static uint AWC_TEA_STIRRER = 0xa9d27bd3; // Different between PC, PS4, and XB1. Unsure about Gen7 or Gen9.
 
-	    public static void SetKeys() // These are for Orbis specifically.
+        public static void SetKeys() // These are for Orbis specifically.
         {
-			// Any platform
-	        PC_LUT = RageStringHash.g_NormalizeCaseAndSlash;
-
 			// Depends on the platform
-	        PC_AES_KEY = RageAesKeys.unique_key_gta5_ps4;
-			PC_NG_KEYS = RageMultiKeys.unique_multikey_gta5_ps4; // Will this work? I don't know!
-			
-			const uint TEA_STIRRER = 0xa9d27bd3; // Also change this in AwcFile.cs
-			PC_AWC_KEY = new uint[4] { TEA_STIRRER ^ 0xF34B1262, TEA_STIRRER ^ 0xCFB0FE66, TEA_STIRRER ^ 0xEC500648, TEA_STIRRER ^ 0xB90ACE74 };
+	        AES_KEY = RageAesKeys.unique_key_gta5_ps4;
 
+            AWC_TEA_STIRRER = 0xa9d27bd3;
+			AWC_KEY = new uint[4] { AWC_TEA_STIRRER ^ 0xF34B1262, AWC_TEA_STIRRER ^ 0xCFB0FE66, AWC_TEA_STIRRER ^ 0xEC500648, AWC_TEA_STIRRER ^ 0xB90ACE74 };
         }
 
         public static void LoadFromPath(string path = ".\\Keys", bool gen9 = false, string key = null)
         {
 	        SetKeys();
-        }
-    }
-
-    public class GTA5NGLUT
-    {
-        public byte[][] LUT0;
-        public byte[][] LUT1;
-        public byte[] Indices;
-
-        public GTA5NGLUT()
-        {
-            LUT0 = new byte[256][];
-            for (int i = 0; i < 256; i++)
-                LUT0[i] = new byte[256];
-
-            LUT1 = new byte[256][];
-            for (int i = 0; i < 256; i++)
-                LUT1[i] = new byte[256];
-
-            Indices = new byte[65536];
-        }
-
-        public byte LookUp(uint value)
-        {
-            uint h16 = (value & 0xFFFF0000) >> 16;
-            uint l8 = (value & 0x0000FF00) >> 8;
-            uint l0 = (value & 0x000000FF) >> 0;
-            return LUT0[LUT1[Indices[h16]][l8]][l0];
-        }
-    }
-    public class RandomGaussRow
-    {
-        //private bool[] A = new bool[1024];
-        private ulong[] A = new ulong[16];
-        public bool B;
-
-
-        public bool GetA(int idx)
-        {
-            int lidx = idx / 64;
-            int bidx = idx % 64;
-            return ((A[lidx] >> bidx) & 0x1) != 0;
-        }
-
-        public void SetA(int idx)
-        {
-            int lidx = idx / 64;
-            int bidx = idx % 64;
-            A[lidx] |= (ulong)1 << bidx;
-        }
-
-        public bool GetB()
-        {
-            return B;
-        }
-
-        public void SetB()
-        {
-            this.B = true;
-        }
-
-        public static RandomGaussRow operator ^(RandomGaussRow r1, RandomGaussRow r2)
-        {
-            var newRow = new RandomGaussRow();
-            for (int i = 0; i < 16; i++)
-                newRow.A[i] = r1.A[i] ^ r2.A[i];
-            newRow.B = r1.B ^ r2.B;
-            return newRow;
         }
     }
 }

@@ -284,6 +284,7 @@ namespace CodeWalker
             InitFileType(".vdf", "Steam Script File", 5, FileTypeAction.ViewText);
 
             InitFileType(".xml", "XML File", 6, FileTypeAction.ViewXml);
+            InitFileType(".json", "JSON File", 5, FileTypeAction.ViewText);
 
             #region Executable formats
 
@@ -291,12 +292,12 @@ namespace CodeWalker
             InitFileType(".xex", "Xbox Executable", 10); // Xbox 360
             InitSubFileType(".bin", "eboot.bin", "Executable", 10); // PS3 and PS4
             InitFileType(".elf", "Executable and Linkable Format", 10);
-            InitFileType(".self", "Signed Executable and Linkable Format", 10);
+            InitFileType(".self", "Signed Executable and Linkable Format", 10); // Sony-specific
 
             InitFileType(".asi", "ASI Plugin", 9); // Just a DLL with a special extension, go figure.
             InitFileType(".dll", "Dynamic Link Library", 9);
-            InitFileType(".prx", "Playstation Relocatable Executable", 10);
-            InitFileType(".sprx", "Signed Playstation Relocatable Executable", 10);
+            InitFileType(".prx", "PlayStation Relocatable Executable", 10);
+            InitFileType(".sprx", "Signed PlayStation Relocatable Executable", 10);
 
             #endregion
 
@@ -360,7 +361,7 @@ namespace CodeWalker
             InitFileType(".rpf", "Rage Package File", 3);
 
             InitFileType(".awc", "Audio Wave Container", 22, FileTypeAction.ViewAwc, true);
-            InitFileType(".rel", "Audio Configuration (release builds)", 23, FileTypeAction.ViewRel, true);
+            InitFileType(".rel", "Audio Configuration (Release)", 23, FileTypeAction.ViewRel, true);
             InitFileType(".nametable", "RAVE Name table", 5, FileTypeAction.ViewNametable);
 
             InitFileType(".sps", "Shader Preset", 5, FileTypeAction.ViewText);
@@ -379,8 +380,7 @@ namespace CodeWalker
             InitFileType(".ugc", "User-Generated Content", 5, FileTypeAction.ViewText); // JSON-like
 
             InitSubFileType(".dat", "cache_o.dat", "Cache File", 6, FileTypeAction.ViewCacheDat, true);
-            InitSubFileType(".dat", "cache_o_bank.dat", "Cache File (BANK builds)", 6, FileTypeAction.ViewCacheDat,
-                true);
+            InitSubFileType(".dat", "cache_o_bank.dat", "Cache File (Bank)", 6, FileTypeAction.ViewCacheDat, true);
             InitSubFileType(".dat", "heightmap.dat", "Heightmap", 6, FileTypeAction.ViewHeightmap, true);
             InitSubFileType(".dat", "heightmapheistisland.dat", "Heightmap", 6, FileTypeAction.ViewHeightmap, true);
             InitSubFileType(".dat", "distantlights.dat", "Distant Lights", 6, FileTypeAction.ViewDistantLights);
@@ -397,31 +397,19 @@ namespace CodeWalker
             InitFileType(".ide", "Item Definitions", 20, FileTypeAction.ViewText);
             InitFileType(".ipl", "Item Placements", 21, FileTypeAction.ViewText);
 
-
             InitFileType(".sco", "Script Object", 13);
-            InitFileType(".scd", "Script Debug", 13); // symbols and things
+            InitFileType(".scd", "Script Debug Data", 13); // symbols and things
 
-            // prospero files, mostly quick tests.
-            InitFileType(".pft", "Fragment", 11, FileTypeAction.ViewModel, true);
-            InitFileType(".pmf", "Manifest", 14, FileTypeAction.ViewYmf, true);
+            // debug audio files
             InitFileType(".dat4", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
             InitFileType(".dat10", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
             InitFileType(".dat15", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
-            InitFileType(".dat54", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
+            //InitFileType(".dat54", "Audio Configuration", 23, FileTypeAction.ViewRel, true); // will fail, format is *slightly* different
             InitFileType(".dat151", "Audio Configuration", 23, FileTypeAction.ViewRel, true);
-            InitFileType(".ppt", "Particle Effect", 18, FileTypeAction.ViewModel, true);
-            InitFileType(".pbvh", "Bounding Something", 4);
-            InitFileType(".pdr", "Drawable", 11, FileTypeAction.ViewModel, true);
-            InitFileType(".ptyp", "Archetype Definitions", 20, FileTypeAction.ViewYtyp, true);
-            InitFileType(".pdd", "Drawable Dictionary", 12, FileTypeAction.ViewModel, true);
-            InitFileType(".ptd", "Texture Dictionary", 16, FileTypeAction.ViewYtd, true);
-            InitFileType(".pmt", "Metadata (Binary)", 6, FileTypeAction.ViewYmt, true);
-            InitFileType(".pmap", "Map Data", 21, FileTypeAction.ViewYmap, true);
-            InitFileType(".pcd", "Clip Dictionary", 18, FileTypeAction.ViewYcd, true);
 	    }
 
 
-			private void InitFileType(string ext, string name, int imgidx, FileTypeAction defaultAction = FileTypeAction.ViewHex, bool xmlConvertible = false)
+        private void InitFileType(string ext, string name, int imgidx, FileTypeAction defaultAction = FileTypeAction.ViewHex, bool xmlConvertible = false)
         {
             var ft = new FileTypeInfo(ext, name, imgidx, defaultAction, xmlConvertible);
             FileTypes[ext] = ft;
