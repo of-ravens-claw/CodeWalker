@@ -15,11 +15,11 @@ namespace CodeWalker
     public static class GTAFolder
     {
         public static string CurrentGTAFolder { get; private set; } = Settings.Default.GTAFolder;
-        public static bool IsGen9 { get; private set; } = Settings.Default.GTAGen9;
+        public static bool IsGen9 { get; private set; } = false;
 
         public static bool IsGen9Folder(string folder)
         {
-            return File.Exists(folder + @"\gta5_enhanced.exe");
+            return false;
         }
 
         public static bool ValidateGTAFolder(string folder, bool gen9, out string failReason)
@@ -51,7 +51,7 @@ namespace CodeWalker
                 return true;
             }
 
-            var gen9 = IsGen9;
+            var gen9 = false;
             string origFolder = CurrentGTAFolder;
             string folder = CurrentGTAFolder;
             SelectFolderForm f = new SelectFolderForm();
@@ -64,7 +64,7 @@ namespace CodeWalker
             if (f.Result == DialogResult.OK && Directory.Exists(f.SelectedFolder))
             {
                 folder = f.SelectedFolder;
-                gen9 = f.IsGen9;
+                gen9 = false;
             }
 
             if (ValidateGTAFolder(folder, gen9, out var failReason))
@@ -91,9 +91,9 @@ namespace CodeWalker
             if(ValidateGTAFolder(folder, gen9))
             {
                 CurrentGTAFolder = folder;
-                IsGen9 = gen9;
+                IsGen9 = false;
                 Settings.Default.GTAFolder = folder;
-                Settings.Default.GTAGen9 = gen9;
+                Settings.Default.GTAGen9 = false;
                 Settings.Default.Save();
                 return true;
             }
